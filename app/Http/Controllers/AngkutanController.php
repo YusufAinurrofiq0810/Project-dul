@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\AngkutanExport;
+use App\Imports\ImportAngkutan;
 use App\Models\Angkutan;
 use App\Models\Merek;
 use App\Models\Perusahaan;
@@ -14,16 +16,26 @@ class AngkutanController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Pastikan baris ini mengambil data dari database Anda.
-        // Jika tabel 'angkutans' kosong, maka tidak ada data yang akan muncul.
-        // Gunakan paginate() untuk data yang lebih besar.
-        $angkutans = Angkutan::with(['perusahaan', 'merek'])->paginate(10); // Contoh: Mengambil 10 data angkutan per halaman
+        $filterPerusahaan = $request->input('perusahaan'); // Get the 'perusahaan' query parameter
 
-        // Pastikan nama key 'angkutans' sesuai dengan nama prop di komponen Vue Anda.
-        return Inertia::render('Angkutan/Index', [ // Sesuaikan path ini jika berbeda
+        $query = Angkutan::with(['perusahaan', 'merek']);
+
+        if ($filterPerusahaan) {
+            $query->whereHas('perusahaan', function ($q) use ($filterPerusahaan) {
+                // Using 'nama_perusahaan' as per your Angkutan interface,
+                // assuming your Perusahaan model has a 'nama_perusahaan' column.
+                // If it's 'nama', change 'nama_perusahaan' to 'nama'.
+                $q->where('nama_perusahaan', 'like', '%' . $filterPerusahaan . '%');
+            });
+        }
+
+        $angkutans = $query->paginate(10); // Apply pagination after filtering
+
+        return Inertia::render('Angkutan/Index', [
             'angkutans' => $angkutans,
+            'filterPerusahaan' => $filterPerusahaan, // Pass the filter back to the frontend
         ]);
     }
 
@@ -56,7 +68,7 @@ class AngkutanController extends Controller
                 'No_KP' => 'required|string|max:255',
                 'No_NIB' => 'required|string|max:255',
                 'No_SK' => 'required|string|max:255',
-                'NO_Mesin' => 'nullable|string|max:255',
+                'No_Mesin' => 'nullable|string|max:255',
                 'Tanggal_SK' => 'required|string|max:255',
                 'Kode_Trayek' => 'required|string|max:255',
                 'No_Seri' => 'required|string|max:255',
@@ -123,11 +135,13 @@ class AngkutanController extends Controller
                 'No_KP' => 'required|string|max:255',
                 'No_NIB' => 'required|string|max:255',
                 'No_SK' => 'required|string|max:255',
+                'No_Mesin' => 'nullable|string|max:255',
                 'Tanggal_SK' => 'required|string|max:255',
                 'Kode_Trayek' => 'required|string|max:255',
                 'No_Seri' => 'required|string|max:255',
-                'Daya_angkut' => 'required|numeric',
+                'Daya_Angkut' => 'required|numeric',
                 'KG' => 'required|numeric',
+                'Tahun_Pembuatan' => 'required|numeric|min:1900|max:' . date('Y'),
                 'Alamat' => 'required|string|max:255'
             ]);
             $angkutan = Angkutan::findOrFail($id);
@@ -152,12 +166,22 @@ class AngkutanController extends Controller
         }
     }
 
-    public function exportexcel()
+    public function exportExcel()
     {
-        // Logika untuk mengekspor data ke Excel
-        // Anda bisa menggunakan library seperti Maatwebsite Excel untuk ini
-        // Contoh:
-        // return Excel::download(new AngkutanExport, 'angkutan.xlsx');
-        return Excel::download(new Angkutan(), 'angkutan.xlsx');
+        // Menggunakan Maatwebsite Excel untuk mengekspor data Angkutan ke file Excel
+        return Excel::download(new AngkutanExport, 'angkutan.xlsx');
+    }
+
+    public function importExcel(Request $request)
+    {
+        // Validasi file yang diunggah
+        $request->validate([
+            'file' => 'required|mimes:xlsx,csv,xls',
+        ]);
+
+        // Menggunakan Maatwebsite Excel untuk mengimpor data Angkutan dari file Excel
+        Excel::import(new ImportAngkutan, $request->file('file'));
+
+        return redirect()->route('angkutan.index')->with('success', 'Angkutan imported successfully.');
     }
 }

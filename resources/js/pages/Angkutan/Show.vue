@@ -24,7 +24,7 @@ interface Angkutan {
     No_KP: string;
     No_NIB: string;
     No_SK: string;
-    NO_Mesin: string | null;
+    No_Mesin: string | null;
     Tanggal_SK: string; // Assuming YYYY-MM-DD format
     Kode_Trayek: string;
     No_Seri: string;
@@ -126,7 +126,7 @@ const displayTahunPembuatan = props.angkutan.Tahun_Pembuatan ?
                     </div>
                     <div class="flex flex-col">
                         <span class="font-semibold text-gray-500 dark:text-gray-400">No. Mesin:</span>
-                        <span>{{ props.angkutan.NO_Mesin || 'N/A' }}</span>
+                        <span>{{ props.angkutan.No_Mesin || 'N/A' }}</span>
                     </div>
                     <div class="flex flex-col">
                         <span class="font-semibold text-gray-500 dark:text-gray-400">Tanggal SK:</span>

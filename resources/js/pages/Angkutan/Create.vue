@@ -41,7 +41,7 @@ const form = useForm({
     No_KP: "",
     No_NIB: "",
     No_SK: "",
-    NO_Mesin: "",
+    No_Mesin: "",
     Tanggal_SK: "",
     Kode_Trayek: "",
     No_Seri: "",
@@ -143,8 +143,8 @@ function submit() {
                             <Label for="no_mesin">No. Mesin</Label>
                             <Input id="no_mesin" type="text"
                                 class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                placeholder="Masukkan No. Mesin" v-model="form.NO_Mesin" />
-                        </div>j
+                                placeholder="Masukkan No. Mesin" v-model="form.No_Mesin" />
+                        </div>
                         <div class="grid gap-2">
                             <Label for="tanggal_sk">Tanggal SK</Label>
                             <Input id="tanggal_sk" type="date"

@@ -27,7 +27,7 @@ interface Angkutan {
     No_KP: string;
     No_NIB: string;
     No_SK: string;
-    NO_Mesin: string | null;
+    No_Mesin: string | null;
     Tanggal_SK: string; // Assuming YYYY-MM-DD format
     Kode_Trayek: string;
     No_Seri: string;
@@ -73,7 +73,7 @@ const form = useForm({
     No_KP: props.angkutan?.No_KP || "",
     No_NIB: props.angkutan?.No_NIB || "",
     No_SK: props.angkutan?.No_SK || "",
-    No_Mesin: props.angkutan?.NO_Mesin || "",
+    No_Mesin: props.angkutan?.No_Mesin || "",
     Tanggal_SK: props.angkutan?.Tanggal_SK || "",
     Kode_Trayek: props.angkutan?.Kode_Trayek || "",
     No_Seri: props.angkutan?.No_Seri || "",
