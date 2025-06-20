@@ -26,7 +26,7 @@ return new class extends Migration
             $table->string('No_Seri')->nullable();
             $table->integer('Daya_Angkut')->nullable();
             $table->integer('KG')->nullable();
-            $table->date('Tahun_Pembuatan')->nullable();
+            $table->string('Tahun_Pembuatan')->nullable();
             $table->unsignedBigInteger('merek_id');
             $table->foreign('merek_id')->references('id')->on('mereks')->onDelete('cascade');
             $table->string('Alamat');

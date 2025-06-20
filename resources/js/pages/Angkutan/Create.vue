@@ -17,50 +17,76 @@ interface Merek {
     nama_merek: string;
 }
 
+interface JenisAngkutan {
+    id: number;
+    Nama_Jenis_Angkutan: string;
+}
+
 // Define props for the component, including lists for dropdowns
 interface Props {
-    perusahaans_list: Perusahaan[]; // List of companies for the dropdown
-    mereks_list: Merek[]; // List of brands for the dropdown
+    perusahaans_list: Perusahaan[];
+    mereks_list: Merek[];
+    jenis_angkutans_list: JenisAngkutan[];
 }
 
 const props = defineProps<Props>();
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Angkutan create', // Changed breadcrumb title
-        href: '/angkutan/create', // Changed breadcrumb href
+        title: 'Angkutan create',
+        href: '/angkutan/create',
     },
 ];
 
-// Inisialisasi form dengan field-field baru dan relasi
+// Fixed form initialization to match model's fillable fields exactly
 const form = useForm({
-    perusahaan_id: "", // Foreign key for Perusahaan
-    merek_id: "", // Foreign key for Merek
+    perusahaan_id: "",
+    merek_id: "",
+    jenis_angkutan_id: "",
+    // Match model's exact field names (note the capitalization)
+    Masa_Berlaku_KP_Start_Date: "",
+    Masa_Berlaku_KP_End_Date: "",
+    Masa_Berlaku_SK_Start_Date: "",
+    Masa_Berlaku_SK_End_Date: "",
+    keterangan_perizinan: "", // lowercase in model
+    NIK: "",
+    Jenis_BBM: "",
+    Masa_Berlaku_STNK: "",
+    No_Rangka: "",
+    No_Trayek: "",
     TNKB: "",
     No_uji: "",
     No_KP: "",
     No_NIB: "",
     No_SK: "",
     No_Mesin: "",
-    Tanggal_SK: "",
     Kode_Trayek: "",
     No_Seri: "",
-    Daya_Angkut: "",
-    KG: "",
-    Tahun_Pembuatan: "",
+    Daya_Angkut_Orang: 0,
+    Daya_Angkut_KG: 0,
+    Tahun_Pembuatan: 0,
     Alamat: "",
 });
 
-
 function submit() {
-    // Changed endpoint to /angkutan
-    form.post('/angkutan', {
+    // Convert string values to appropriate types before submission
+    const submitData = {
+        ...form.data(),
+        perusahaan_id: parseInt(form.perusahaan_id) || null,
+        merek_id: parseInt(form.merek_id) || null,
+        jenis_angkutan_id: parseInt(form.jenis_angkutan_id) || null,
+        Daya_Angkut_Orang: parseInt(form.Daya_Angkut_Orang.toString()) || 0,
+        Daya_Angkut_KG: parseInt(form.Daya_Angkut_KG.toString()) || 0,
+        Tahun_Pembuatan: parseInt(form.Tahun_Pembuatan.toString()) || 0,
+    };
+
+    form.transform(() => submitData).post(route('angkutan.store'), {
         onSuccess: () => {
             form.reset();
-            console.log('Angkutan berhasil dibuat!'); // Changed success message
+            console.log('Angkutan berhasil dibuat!');
         },
         onError: (errors) => {
-            console.error('Terjadi kesalahan saat membuat angkutan:', errors); // Changed error message
+            console.error('Terjadi kesalahan saat membuat angkutan:', errors);
         },
     });
 }
@@ -78,8 +104,34 @@ function submit() {
             </div>
 
             <div class="overflow-x-auto p-4 bg-white dark:bg-gray-800 rounded-lg shadow">
+                <!-- Display validation errors if any -->
+                <div v-if="form.errors && Object.keys(form.errors).length > 0"
+                    class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+                    <h4 class="font-bold">Validation Errors:</h4>
+                    <ul class="list-disc list-inside">
+                        <li v-for="(error, field) in form.errors" :key="field">
+                            {{ field }}: {{ error }}
+                        </li>
+                    </ul>
+                </div>
+
                 <form @submit.prevent="submit" class="space-y-4">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Jenis Kendaraan -->
+                        <div class="grid gap-2">
+                            <Label for="jenis_angkutan_id">Jenis Kendaraan</Label>
+                            <select id="jenis_angkutan_id"
+                                class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                v-model="form.jenis_angkutan_id" required>
+                                <option value="" disabled>Pilih Jenis Kendaraan</option>
+                                <option v-for="jenis in props.jenis_angkutans_list" :key="jenis.id"
+                                    :value="jenis.id.toString()">
+                                    {{ jenis.Nama_Jenis_Angkutan }}
+                                </option>
+                            </select>
+                        </div>
+
+                        <!-- Nama Perusahaan -->
                         <div class="grid gap-2">
                             <Label for="perusahaan_id">Nama Perusahaan</Label>
                             <select id="perusahaan_id"
@@ -87,31 +139,106 @@ function submit() {
                                 v-model="form.perusahaan_id" required>
                                 <option value="" disabled>Pilih Perusahaan</option>
                                 <option v-for="perusahaan in props.perusahaans_list" :key="perusahaan.id"
-                                    :value="perusahaan.id">
+                                    :value="perusahaan.id.toString()">
                                     {{ perusahaan.nama_perusahaan }}
                                 </option>
                             </select>
                         </div>
 
+                        <!-- Merek -->
                         <div class="grid gap-2">
                             <Label for="merek_id">Merek</Label>
                             <select id="merek_id"
                                 class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                                 v-model="form.merek_id" required>
                                 <option value="" disabled>Pilih Merek</option>
-                                <option v-for="merek in props.mereks_list" :key="merek.id" :value="merek.id">
+                                <option v-for="merek in props.mereks_list" :key="merek.id" :value="merek.id.toString()">
                                     {{ merek.nama_merek }}
                                 </option>
                             </select>
                         </div>
 
+                        <!-- Tanggal mulai KP -->
                         <div class="grid gap-2">
-                            <Label for="tnk">TNK</Label>
-                            <Input id="tnk" type="text"
+                            <Label for="masa_berlaku_kp_start_date">Tanggal mulai KP</Label>
+                            <Input id="masa_berlaku_kp_start_date" type="date"
+                                class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                v-model="form.Masa_Berlaku_KP_Start_Date" />
+                        </div>
+
+                        <!-- Tanggal Berakhir KP -->
+                        <div class="grid gap-2">
+                            <Label for="masa_berlaku_kp_end_date">Tanggal Berakhir KP</Label>
+                            <Input id="masa_berlaku_kp_end_date" type="date"
+                                class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                v-model="form.Masa_Berlaku_KP_End_Date" />
+                        </div>
+
+                        <!-- Tanggal mulai SK -->
+                        <div class="grid gap-2">
+                            <Label for="masa_berlaku_sk_start_date">Tanggal mulai SK</Label>
+                            <Input id="masa_berlaku_sk_start_date" type="date"
+                                class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                v-model="form.Masa_Berlaku_SK_Start_Date" />
+                        </div>
+
+                        <!-- Tanggal Berakhir SK -->
+                        <div class="grid gap-2">
+                            <Label for="masa_berlaku_sk_end_date">Tanggal Berakhir SK</Label>
+                            <Input id="masa_berlaku_sk_end_date" type="date"
+                                class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                v-model="form.Masa_Berlaku_SK_End_Date" />
+                        </div>
+
+                        <!-- NIK -->
+                        <div class="grid gap-2">
+                            <Label for="nik">NIK</Label>
+                            <Input id="nik" type="text"
+                                class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                placeholder="Masukkan NIK" v-model="form.NIK" />
+                        </div>
+
+                        <!-- Jenis BBM -->
+                        <div class="grid gap-2">
+                            <Label for="jenis_bbm">Jenis BBM</Label>
+                            <Input id="jenis_bbm" type="text"
+                                class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                placeholder="Masukkan Jenis BBM" v-model="form.Jenis_BBM" />
+                        </div>
+
+                        <!-- Masa Berlaku STNK -->
+                        <div class="grid gap-2">
+                            <Label for="masa_berlaku_stnk">Masa Berlaku STNK</Label>
+                            <Input id="masa_berlaku_stnk" type="date"
+                                class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                v-model="form.Masa_Berlaku_STNK" />
+                        </div>
+
+                        <!-- No. Rangka -->
+                        <div class="grid gap-2">
+                            <Label for="no_rangka">No. Rangka</Label>
+                            <Input id="no_rangka" type="text"
+                                class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                placeholder="Masukkan No. Rangka" v-model="form.No_Rangka" />
+                        </div>
+
+                        <!-- No. Trayek -->
+                        <div class="grid gap-2">
+                            <Label for="no_trayek">No. Trayek</Label>
+                            <Input id="no_trayek" type="text"
+                                class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                placeholder="Masukkan No. Trayek" v-model="form.No_Trayek" />
+                        </div>
+
+                        <!-- TNKB -->
+                        <div class="grid gap-2">
+                            <Label for="tnkb">TNKB</Label>
+                            <Input id="tnkb" type="text"
                                 class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                                 placeholder="Masukkan TNKB" v-model="form.TNKB" />
                         </div>
 
+                        <!-- No. Uji -->
                         <div class="grid gap-2">
                             <Label for="no_uji">No. Uji</Label>
                             <Input id="no_uji" type="text"
@@ -119,6 +246,7 @@ function submit() {
                                 placeholder="Masukkan No. Uji" v-model="form.No_uji" />
                         </div>
 
+                        <!-- No. KP -->
                         <div class="grid gap-2">
                             <Label for="no_kp">No. KP</Label>
                             <Input id="no_kp" type="text"
@@ -126,6 +254,7 @@ function submit() {
                                 placeholder="Masukkan No. KP" v-model="form.No_KP" />
                         </div>
 
+                        <!-- No. NIB -->
                         <div class="grid gap-2">
                             <Label for="no_nib">No. NIB</Label>
                             <Input id="no_nib" type="text"
@@ -133,25 +262,23 @@ function submit() {
                                 placeholder="Masukkan No. NIB" v-model="form.No_NIB" />
                         </div>
 
+                        <!-- No. SK -->
                         <div class="grid gap-2">
                             <Label for="no_sk">No. SK</Label>
                             <Input id="no_sk" type="text"
                                 class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                                 placeholder="Masukkan No. SK" v-model="form.No_SK" />
                         </div>
+
+                        <!-- No. Mesin -->
                         <div class="grid gap-2">
                             <Label for="no_mesin">No. Mesin</Label>
                             <Input id="no_mesin" type="text"
                                 class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                                 placeholder="Masukkan No. Mesin" v-model="form.No_Mesin" />
                         </div>
-                        <div class="grid gap-2">
-                            <Label for="tanggal_sk">Tanggal SK</Label>
-                            <Input id="tanggal_sk" type="date"
-                                class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                v-model="form.Tanggal_SK" />
-                        </div>
 
+                        <!-- Kode Trayek -->
                         <div class="grid gap-2">
                             <Label for="kode_trayek">Kode Trayek</Label>
                             <Input id="kode_trayek" type="text"
@@ -159,45 +286,63 @@ function submit() {
                                 placeholder="Masukkan Kode Trayek" v-model="form.Kode_Trayek" />
                         </div>
 
+                        <!-- No. Seri -->
                         <div class="grid gap-2">
-                            <Label for="nomer_seri">Nomer Seri</Label>
-                            <Input id="nomer_seri" type="text"
+                            <Label for="no_seri">No. Seri</Label>
+                            <Input id="no_seri" type="text"
                                 class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                placeholder="Masukkan Nomer Seri" v-model="form.No_Seri" />
+                                placeholder="Masukkan No. Seri" v-model="form.No_Seri" />
                         </div>
 
+                        <!-- Daya Angkut Orang -->
                         <div class="grid gap-2">
-                            <Label for="daya_angkut">Daya Angkut</Label>
-                            <Input id="daya_angkut" type="number"
+                            <Label for="daya_angkut_orang">Daya Angkut Orang</Label>
+                            <Input id="daya_angkut_orang" type="number"
                                 class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                placeholder="Masukkan Daya Angkut" v-model="form.Daya_Angkut" />
+                                placeholder="Masukkan Daya Angkut Orang" v-model.number="form.Daya_Angkut_Orang" />
                         </div>
 
+                        <!-- Daya Angkut KG -->
                         <div class="grid gap-2">
-                            <Label for="kg">KG</Label>
-                            <Input id="kg" type="number"
+                            <Label for="daya_angkut_kg">Daya Angkut KG</Label>
+                            <Input id="daya_angkut_kg" type="number"
                                 class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                placeholder="Masukkan KG" v-model="form.KG" />
+                                placeholder="Masukkan Daya Angkut KG" v-model.number="form.Daya_Angkut_KG" />
                         </div>
 
+                        <!-- Tahun Pembuatan -->
                         <div class="grid gap-2">
                             <Label for="tahun_pembuatan">Tahun Pembuatan</Label>
-                            <Input id="tahun_pembuatan" type="number"
+                            <Input id="tahun_pembuatan" type="number" min="1900" :max="new Date().getFullYear()"
                                 class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                placeholder="Masukkan Tahun Pembuatan" v-model="form.Tahun_Pembuatan" />
+                                placeholder="Masukkan Tahun Pembuatan" v-model.number="form.Tahun_Pembuatan" />
                         </div>
                     </div>
 
+                    <!-- Alamat -->
                     <div class="grid gap-2">
                         <Label for="alamat">Alamat</Label>
-                        <Input id="alamat" type="text"
+                        <textarea id="alamat" rows="3"
                             class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                            placeholder="Masukkan Alamat" v-model="form.Alamat" />
+                            placeholder="Masukkan Alamat" v-model="form.Alamat"></textarea>
                     </div>
 
-                    <div class="mt-4">
+                    <!-- Keterangan Perizinan -->
+                    <div class="grid gap-2">
+                        <Label for="keterangan_perizinan">Keterangan Perizinan</Label>
+                        <select id="keterangan_perizinan"
+                            class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                            v-model="form.keterangan_perizinan">
+                            <option value="">Pilih Status</option>
+                            <option value="1">Aktif</option>
+                            <option value="0">Tidak Aktif</option>
+                        </select>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="mt-6">
                         <Button type="submit" :disabled="form.processing"
-                            class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:bg-blue-500 dark:hover:bg-blue-600">
+                            class="px-6 py-3 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:bg-blue-500 dark:hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed">
                             {{ form.processing ? 'Menyimpan...' : 'Simpan Angkutan' }}
                         </Button>
                     </div>

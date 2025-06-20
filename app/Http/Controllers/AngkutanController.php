@@ -5,9 +5,12 @@ namespace App\Http\Controllers;
 use App\Exports\AngkutanExport;
 use App\Imports\ImportAngkutan;
 use App\Models\Angkutan;
+use App\Models\JenisAngkutan;
 use App\Models\Merek;
 use App\Models\Perusahaan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -19,23 +22,31 @@ class AngkutanController extends Controller
     public function index(Request $request)
     {
         $filterPerusahaan = $request->input('perusahaan'); // Get the 'perusahaan' query parameter
-
-        $query = Angkutan::with(['perusahaan', 'merek']);
+        $filterJenisAngkutan = $request->input('jenis_angkutan'); // Get the 'jenis_angkutan' query parameter
+        $query = Angkutan::query();
+        $query = Angkutan::with(['perusahaan', 'merek', 'jenisAngkutan']);
+        // dd(JenisAngkutan
+        //     ::all());
 
         if ($filterPerusahaan) {
             $query->whereHas('perusahaan', function ($q) use ($filterPerusahaan) {
-                // Using 'nama_perusahaan' as per your Angkutan interface,
-                // assuming your Perusahaan model has a 'nama_perusahaan' column.
-                // If it's 'nama', change 'nama_perusahaan' to 'nama'.
                 $q->where('nama_perusahaan', 'like', '%' . $filterPerusahaan . '%');
+            });
+        }
+
+        if ($filterJenisAngkutan) {
+            $query->whereHas('jenisAngkutan', function ($q) use ($filterJenisAngkutan) {
+                $q->where('Nama_Jenis_Angkutan', 'like', '%' . $filterJenisAngkutan . '%');
             });
         }
 
         $angkutans = $query->paginate(10); // Apply pagination after filtering
 
+        // dd($angkutans->toArray());
         return Inertia::render('Angkutan/Index', [
             'angkutans' => $angkutans,
-            'filterPerusahaan' => $filterPerusahaan, // Pass the filter back to the frontend
+            'filterPerusahaan' => $filterPerusahaan,
+            'filterJenisAngkutan' => $filterJenisAngkutan,
         ]);
     }
 
@@ -47,10 +58,12 @@ class AngkutanController extends Controller
     {
         $perusahaans = Perusahaan::all(); // Ambil semua perusahaan
         $mereks = Merek::all(); // Ambil semua merek
+        $jenis_angkutans = JenisAngkutan::all(); // Ambil semua jenis angkutan
         // Pastikan Anda mengembalikan view yang sesuai untuk form pembuatan angkutan
         return Inertia::render('Angkutan/Create', [
             'perusahaans_list' => $perusahaans,
             'mereks_list' => $mereks,
+            'jenis_angkutans_list' => $jenis_angkutans,
         ]); // Sesuaikan path ini jika berbeda
     }
 
@@ -59,31 +72,43 @@ class AngkutanController extends Controller
      */
     public function store(Request $request)
     {
+
+        Log::info('test');
         try {
-            $validatedData = $request->validate([
+            $validator = Validator::make($request->all(), [
                 'perusahaan_id' => 'required|exists:perusahaans,id',
                 'merek_id' => 'required|exists:mereks,id',
-                'TNKB' => 'required|string|max:255',
-                'No_uji' => 'required|string|max:255',
-                'No_KP' => 'required|string|max:255',
-                'No_NIB' => 'required|string|max:255',
-                'No_SK' => 'required|string|max:255',
+                'jenis_angkutan_id' => 'required|exists:jenis_angkutans,id',
+                'Masa_Berlaku_KP_Start_Date' => 'nullable|date|before_or_equal:Masa_Berlaku_KP_End_Date',
+                'Masa_Berlaku_KP_End_Date' => 'nullable|date|after_or_equal:Masa_Berlaku_KP_Start_Date',
+                'Masa_Berlaku_SK_Start_Date' => 'nullable|date|before_or_equal:Masa_Berlaku_SK_End_Date',
+                'Masa_Berlaku_SK_End_Date' => 'nullable|date|after_or_equal:Masa_Berlaku_SK_Start_Date',
+                'keterangan_perizinan' => 'nullable|boolean',
+                'NIK' => 'nullable|string|max:255',
+                'Jenis_BBM' => 'nullable|string|max:255',
+                'Masa_Berlaku_STNK' => 'nullable|date',
+                'No_Rangka' => 'nullable|string|max:255',
+                'No_Trayek' => 'nullable|string|max:255',
+                'TNKB' => 'nullable|string|max:255',
+                'No_uji' => 'nullable|string|max:255',
+                'No_KP' => 'nullable|string|max:255',
+                'No_NIB' => 'nullable|string|max:255',
+                'No_SK' => 'nullable|string|max:255',
                 'No_Mesin' => 'nullable|string|max:255',
-                'Tanggal_SK' => 'required|string|max:255',
-                'Kode_Trayek' => 'required|string|max:255',
-                'No_Seri' => 'required|string|max:255',
-                'Daya_Angkut' => 'required|numeric',
-                'KG' => 'required|numeric',
-                'Tahun_Pembuatan' => 'required|numeric|min:1900|max:' . date('Y'),
-                'Alamat' => 'required|string|max:255'
+                // 'Tanggal_SK' => 'nullable|string|max:255',
+                'Kode_Trayek' => 'nullable|string|max:255',
+                'No_Seri' => 'nullable|string|max:255',
+                'Daya_Angkut_Orang' => 'nullable|numeric',
+                'Daya_Angkut_KG' => 'nullable|numeric',
+                'Tahun_Pembuatan' => 'nullable|numeric',
+                'Alamat' => 'nullable|string|max:255',
             ]);
+            // Jika validasi berhasil, lanjutkan dengan logika penyimpanan data
+            Angkutan::create($validator->validated());
 
-            $validatedData['Tahun_Pembuatan'] = $validatedData['Tahun_Pembuatan'] . '-01-01'; // Format tahun pembuatan menjadi YYYY-MM-DD
-
-            Angkutan::create($validatedData);
             return redirect()->route('angkutan.index')->with('success', 'Angkutan created successfully.');
         } catch (\Throwable $th) {
-            // Tangani error dengan mengembalikan pesan kesalahan
+            Log::info($th);
             return redirect()->back()->with('error', 'Failed to create angkutan: ' . $th->getMessage());
         }
     }
@@ -93,18 +118,23 @@ class AngkutanController extends Controller
      */
     public function show(string $id)
     {
+        // Log::info('Show Angkutan ID: ' . $id);
+        // dd($id);
         // Temukan angkutan berdasarkan ID, dengan memuat relasi perusahaan dan merek
-        $angkutan = Angkutan::with(['perusahaan', 'merek'])->findOrFail($id);
+        $angkutan = Angkutan::with(['perusahaan', 'merek', 'jenisAngkutan'])->findOrFail($id);
 
         // Ambil semua data perusahaan dan merek dari database
         $perusahaans = Perusahaan::all();
         $mereks = Merek::all();
+        $jenis_angkutans = JenisAngkutan::all();
 
+        // dd($angkutan->toArray());
         // Render komponen Inertia 'Angkutan/Show' dan teruskan semua data yang diperlukan
         return Inertia::render('Angkutan/Show', [
             'angkutan' => $angkutan,
             'perusahaans_list' => $perusahaans, // Tambahkan ini
             'mereks_list' => $mereks,           // Tambahkan ini
+            'jenis_angkutans_list' => $jenis_angkutans, // Tambahkan ini
         ]);
     }
 
@@ -117,8 +147,10 @@ class AngkutanController extends Controller
         return Inertia::render('Angkutan/Update', [
             'angkutan' => $angkutan,
             'perusahaans_list' => Perusahaan::all(), // Tambahkan ini
-            'mereks_list' => Merek::all(),           // Tambahkan ini
+            'mereks_list' => Merek::all(),
+            'jenis_angkutans_list' => JenisAngkutan::all(), // Tambahkan ini
         ]);
+        // dd($angkutan->toArray());
     }
 
     /**
@@ -126,26 +158,41 @@ class AngkutanController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        // dd($request->all());
+        // Log::info('Update Angkutan Request: ', $request->all());
         try {
             $request->validate([
                 'perusahaan_id' => 'required|exists:perusahaans,id',
                 'merek_id' => 'required|exists:mereks,id',
-                'TNKB' => 'required|string|max:255',
-                'No_uji' => 'required|string|max:255',
-                'No_KP' => 'required|string|max:255',
-                'No_NIB' => 'required|string|max:255',
-                'No_SK' => 'required|string|max:255',
+                'jenis_angkutan_id' => 'required|exists:jenis_angkutans,id',
+                'Masa_Berlaku_Kp_Start_Date' => 'nullable|date',
+                'Masa_Berlaku_Kp_End_Date' => 'nullable|date',
+                'Masa_Berlaku_Kk_Start_Date' => 'nullable|date',
+                'Masa_Berlaku_Kk_End_Date' => 'nullable|date',
+                'keterangan_perizinan' => 'nullable|boolean',
+                'NIK' => 'nullable|string|max:255',
+                'Jenis_BBM' => 'nullable|string|max:255',
+                'Masa_Berlaku_STNK' => 'nullable|date',
+                'No_Rangka' => 'nullable|string|max:255',
+                'No_Trayek' => 'nullable|string|max:255',
+                'TNKB' => 'nullable|string|max:255',
+                'No_uji' => 'nullable|string|max:255',
+                'No_KP' => 'nullable|string|max:255',
+                'No_NIB' => 'nullable|string|max:255',
+                'No_SK' => 'nullable|string|max:255',
                 'No_Mesin' => 'nullable|string|max:255',
-                'Tanggal_SK' => 'required|string|max:255',
-                'Kode_Trayek' => 'required|string|max:255',
-                'No_Seri' => 'required|string|max:255',
-                'Daya_Angkut' => 'required|numeric',
-                'KG' => 'required|numeric',
-                'Tahun_Pembuatan' => 'required|numeric|min:1900|max:' . date('Y'),
-                'Alamat' => 'required|string|max:255'
+                'No_KP' => 'nullable|string|max:255',
+                // 'Tanggal_SK' => 'nullable|string|max:255',
+                'Kode_Trayek' => 'nullable|string|max:255',
+                'No_Seri' => 'nullable|string|max:255',
+                'Daya_Angkut' => 'nullable|numeric',
+                'KG' => 'nullable|numeric',
+                'Tahun_Pembuatan' => 'nullable|numeric|min:1900|max:' . date('Y'),
+                'Alamat' => 'nullable|string|max:255'
             ]);
+            Log::info($request->all());
             $angkutan = Angkutan::findOrFail($id);
-            $request->merge(['Tahun_Pembuatan' => $request->input('Tahun_Pembuatan') . '-01-01']); // Format tahun pembuatan menjadi YYYY-MM-DD
+            // $request->merge(['Tahun_Pembuatan' => $request->input('Tahun_Pembuatan') . '-01-01']); // Format tahun pembuatan menjadi YYYY-MM-DD
             $angkutan->update($request->all());
             return redirect()->route('angkutan.index')->with('success', 'Angkutan updated successfully.');
         } catch (\Throwable $th) {
@@ -178,10 +225,13 @@ class AngkutanController extends Controller
         $request->validate([
             'file' => 'required|mimes:xlsx,csv,xls',
         ]);
+        // dd($request->all());
+        // Log::info('Import Angkutan Request: ', $request->all());
 
         // Menggunakan Maatwebsite Excel untuk mengimpor data Angkutan dari file Excel
         Excel::import(new ImportAngkutan, $request->file('file'));
-
+        // dd($request->file('file')->getClientOriginalName());
+        // Log::info('test import');
         return redirect()->route('angkutan.index')->with('success', 'Angkutan imported successfully.');
     }
 }

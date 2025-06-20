@@ -17,32 +17,47 @@ interface Merek {
     nama_merek: string;
 }
 
+interface JenisAngkutan {
+    id: number;
+    Nama_Jenis_Angkutan: string;
+}
+
 // Define type for Angkutan model (assuming it matches your database structure)
 interface Angkutan {
     id: number;
     perusahaan_id: number;
     merek_id: number;
+    jenis_angkutan_id: number; // Assuming this is a foreign key to JenisAngkutan
+    Masa_berlaku_KP_Start_date: string; // Assuming YYYY-MM-DD format
+    Masa_berlaku_KP_End_date: string; // Assuming YYYY-MM-DD format
+    Masa_berlaku_SK_Start_date: string; // Assuming YYYY-MM-DD format
+    Masa_berlaku_SK_End_date: string; // Assuming YYYY-MM-DD format
+    keterangan_perizinan: string | null; // Assuming this can be null
+    NIK: string;
+    Jenis_BBM: string;
+    Masa_Berlaku_STNK: string; // Assuming YYYY-MM-DD format
+    No_Rangka: string;
+    No_Trayek: string;
     TNKB: string;
     No_uji: string;
     No_KP: string;
     No_NIB: string;
     No_SK: string;
     No_Mesin: string | null;
-    Tanggal_SK: string; // Assuming YYYY-MM-DD format
+    // Tanggal_SK: string; // Assuming YYYY-MM-DD format
     Kode_Trayek: string;
     No_Seri: string;
-    Daya_Angkut: number;
-    KG: number;
+    Daya_Angkut_Orang: number;
+    Daya_Angkut_KG: number;
     Tahun_Pembuatan: string; // Stored as 'YYYY-01-01' in DB, but we'll extract the year
     Alamat: string;
-    created_at: string;
-    updated_at: string;
 }
 
 // Define props for the component, including lists for dropdowns and an optional Angkutan object for editing
 interface Props {
     perusahaans_list: Perusahaan[]; // List of companies for the dropdown
     mereks_list: Merek[]; // List of brands for the dropdown
+    jenis_angkutans_list: JenisAngkutan[]; // List of types of transportation for the dropdown
     angkutan?: Angkutan; // Optional Angkutan object for editing
 }
 
@@ -68,17 +83,28 @@ const form = useForm({
     // Populate form fields with existing angkutan data if in edit mode, otherwise empty
     perusahaan_id: props.angkutan?.perusahaan_id.toString() || "", // Convert to string for select
     merek_id: props.angkutan?.merek_id.toString() || "", // Convert to string for select
+    jenis_angkutan_id: props.angkutan?.jenis_angkutan_id.toString() || "", // Convert to string for select
+    Masa_Berlaku_KP_Start_Date: props.angkutan?.Masa_berlaku_KP_Start_date || "",
+    Masa_Berlaku_KP_End_Date: props.angkutan?.Masa_berlaku_KP_End_date || "",
+    Masa_Berlaku_SK_Start_Date: props.angkutan?.Masa_berlaku_SK_Start_date || "",
+    Masa_Berlaku_SK_End_Date: props.angkutan?.Masa_berlaku_SK_End_date || "",
+    keterangan_perizinan: props.angkutan?.keterangan_perizinan || 1,
+    NIK: props.angkutan?.NIK || "",
+    Jenis_BBM: props.angkutan?.Jenis_BBM || "",
+    Masa_Berlaku_STNK: props.angkutan?.Masa_Berlaku_STNK || "",
+    No_Rangka: props.angkutan?.No_Rangka || "",
+    No_Trayek: props.angkutan?.No_Trayek || "",
     TNKB: props.angkutan?.TNKB || "",
     No_uji: props.angkutan?.No_uji || "",
     No_KP: props.angkutan?.No_KP || "",
     No_NIB: props.angkutan?.No_NIB || "",
     No_SK: props.angkutan?.No_SK || "",
     No_Mesin: props.angkutan?.No_Mesin || "",
-    Tanggal_SK: props.angkutan?.Tanggal_SK || "",
+    // Tanggal_SK: props.angkutan?.Tanggal_SK || "",
     Kode_Trayek: props.angkutan?.Kode_Trayek || "",
     No_Seri: props.angkutan?.No_Seri || "",
-    Daya_Angkut: props.angkutan?.Daya_Angkut || "",
-    KG: props.angkutan?.KG || "",
+    Daya_Angkut_Orang: props.angkutan?.Daya_Angkut_Orang || "",
+    Daya_Angkut_KG: props.angkutan?.Daya_Angkut_KG || "",
     // Extract only the year from Tahun_Pembuatan if in edit mode
     Tahun_Pembuatan: props.angkutan?.Tahun_Pembuatan ? new Date(props.angkutan.Tahun_Pembuatan).getFullYear().toString() : "",
     Alamat: props.angkutan?.Alamat || "",
@@ -153,6 +179,106 @@ function submit() {
                             <div v-if="form.errors.merek_id" class="text-red-500 text-sm">{{ form.errors.merek_id }}
                             </div>
                         </div>
+                        <div class="grid gap-2">
+                            <Label for="jenis_angkutan_id">Jenis Angkutan</Label>
+                            <select id="jenis_angkutan_id"
+                                class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                v-model="form.jenis_angkutan_id" required>
+                                <option value="" disabled>Pilih Jenis Angkutan</option>
+                                <option v-for="jenis in props.jenis_angkutans_list" :key="jenis.id" :value="jenis.id">
+                                    {{ jenis.Nama_Jenis_Angkutan }}
+                                </option>
+                            </select>
+                            <div v-if="form.errors.jenis_angkutan_id" class="text-red-500 text-sm">
+                                {{ form.errors.jenis_angkutan_id }}</div>
+                        </div>
+                        <div class="grid gap-2">
+                            <Label for="masa_berlaku_kp_start_date">Masa Berlaku KP Start Date</Label>
+                            <Input id="masa_berlaku_kp_start_date" type="date"
+                                class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                v-model="form.Masa_Berlaku_KP_Start_Date" />
+                            <div v-if="form.errors.Masa_Berlaku_KP_Start_Date" class="text-red-500 text-sm">
+                                {{ form.errors.Masa_Berlaku_KP_Start_Date }}</div>
+                        </div>
+                        <div class="grid gap-2">
+                            <Label for="masa_berlaku_kp_end_date">Masa Berlaku KP End Date</Label>
+                            <Input id="masa_berlaku_kp_end_date" type="date"
+                                class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                v-model="form.Masa_Berlaku_KP_End_Date" />
+                            <div v-if="form.errors.Masa_Berlaku_KP_End_Date" class="text-red-500 text-sm">
+                                {{ form.errors.Masa_Berlaku_KP_End_Date }}</div>
+                        </div>
+                        <div class="grid gap-2">
+                            <Label for="masa_berlaku_sk_start_date">Masa Berlaku SK Start Date</Label>
+                            <Input id="masa_berlaku_sk_start_date" type="date"
+                                class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                v-model="form.Masa_Berlaku_SK_Start_Date" />
+                            <div v-if="form.errors.Masa_Berlaku_SK_Start_Date" class="text-red-500 text-sm">
+                                {{ form.errors.Masa_Berlaku_SK_Start_Date }}</div>
+                        </div>
+
+                        <div class="grid gap-2">
+                            <Label for="masa_berlaku_sk_end_date">Masa Berlaku SK End Date</Label>
+                            <Input id="masa_berlaku_sk_end_date" type="date"
+                                class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                v-model="form.Masa_Berlaku_SK_End_Date" />
+                            <div v-if="form.errors.Masa_Berlaku_SK_End_Date" class="text-red-500 text-sm">
+                                {{ form.errors.Masa_Berlaku_SK_End_Date }}</div>
+                        </div>
+                        <div class="grid gap-2">
+                            <Label for="keterangan_perizinan">Keterangan Perizinan</Label>
+                            <select id="keterangan_perizinan"
+                                class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                v-model="form.keterangan_perizinan">
+                                <option value="">Pilih Status</option>
+                                <option value="1">Aktif</option>
+                                <option value="0">Tidak Aktif</option>
+                            </select>
+                        </div>
+
+                        <div class="grid gap-2">
+                            <Label for="nik">NIK</Label>
+                            <Input id="nik" type="text"
+                                class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                placeholder="Masukkan NIK" v-model="form.NIK" />
+                            <div v-if="form.errors.NIK" class="text-red-500 text-sm">{{ form.errors.NIK }}</div>
+                        </div>
+
+                        <div class="grid gap-2">
+                            <Label for="jenis_bbm">Jenis BBM</Label>
+                            <Input id="jenis_bbm" type="text"
+                                class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                placeholder="Masukkan Jenis BBM" v-model="form.Jenis_BBM" />
+                            <div v-if="form.errors.Jenis_BBM" class="text-red-500 text-sm">{{ form.errors.Jenis_BBM }}
+                            </div>
+                        </div>
+
+                        <div class="grid gap-2">
+                            <Label for="masa_berlaku_stnk">Masa Berlaku STNK</Label>
+                            <Input id="masa_berlaku_stnk" type="date"
+                                class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                v-model="form.Masa_Berlaku_STNK" />
+                            <div v-if="form.errors.Masa_Berlaku_STNK" class="text-red-500 text-sm">
+                                {{ form.errors.Masa_Berlaku_STNK }}</div>
+                        </div>
+
+                        <div class="grid gap-2">
+                            <Label for="no_rangka">No. Rangka</Label>
+                            <Input id="no_rangka" type="text"
+                                class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                placeholder="Masukkan No. Rangka" v-model="form.No_Rangka" />
+                            <div v-if="form.errors.No_Rangka" class="text-red-500 text-sm">{{ form.errors.No_Rangka }}
+                            </div>
+                        </div>
+                        <div class="grid gap-2">
+                            <Label for="no_trayek">No. Trayek</Label>
+                            <Input id="no_trayek" type="text"
+                                class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                placeholder="Masukkan No. Trayek" v-model="form.No_Trayek" />
+                            <div v-if="form.errors.No_Trayek" class="text-red-500 text-sm">{{ form.errors.No_Trayek }}
+                            </div>
+                        </div>
+
 
                         <div class="grid gap-2">
                             <Label for="tnkb">TNKB</Label>
@@ -205,15 +331,6 @@ function submit() {
                         </div>
 
                         <div class="grid gap-2">
-                            <Label for="tanggal_sk">Tanggal SK</Label>
-                            <Input id="tanggal_sk" type="date"
-                                class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                v-model="form.Tanggal_SK" />
-                            <div v-if="form.errors.Tanggal_SK" class="text-red-500 text-sm">
-                                {{ form.errors.Tanggal_SK }}</div>
-                        </div>
-
-                        <div class="grid gap-2">
                             <Label for="kode_trayek">Kode Trayek</Label>
                             <Input id="kode_trayek" type="text"
                                 class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
@@ -235,17 +352,18 @@ function submit() {
                             <Label for="daya_angkut">Daya Angkut</Label>
                             <Input id="daya_angkut" type="number"
                                 class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                placeholder="Masukkan Daya Angkut" v-model="form.Daya_Angkut" />
-                            <div v-if="form.errors.Daya_Angkut" class="text-red-500 text-sm">
-                                {{ form.errors.Daya_Angkut }}</div>
+                                placeholder="Masukkan Daya Angkut" v-model="form.Daya_Angkut_Orang" />
+                            <div v-if="form.errors.Daya_Angkut_Orang" class="text-red-500 text-sm">
+                                {{ form.errors.Daya_Angkut_Orang }}</div>
                         </div>
 
                         <div class="grid gap-2">
                             <Label for="kg">KG</Label>
                             <Input id="kg" type="number"
                                 class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                placeholder="Masukkan KG" v-model="form.KG" />
-                            <div v-if="form.errors.KG" class="text-red-500 text-sm">{{ form.errors.KG }}</div>
+                                placeholder="Masukkan KG" v-model="form.Daya_Angkut_KG" />
+                            <div v-if="form.errors.Daya_Angkut_KG" class="text-red-500 text-sm">{{
+                                form.errors.Daya_Angkut_KG }}</div>
                         </div>
 
                         <div class="grid gap-2">

@@ -58,19 +58,18 @@ const breadcrumbs: BreadcrumbItem[] = [
                     <thead
                         class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-2">
                         <tr>
-                            <th scope="col" class="px-6 py-3 border-2">ID</th>
+                            <th scope="col" class="px-6 py-3 border-2">No.</th>
                             <th scope="col" class="px-6 py-3 border-2">Nama Perusahaan</th>
                             <th scope="col" class="px-6 py-3 border-2">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="perusahaan in props.perusahaans" :key="perusahaan.id"
+                        <tr v-for="(perusahaan, index) in props.perusahaans" :key="perusahaan.id"
                             class="add-bg-white add:dark:bg-gray-800 even:bg-gray-50 dark:even:bg-gray-700">
-                            <td class="border px-6 py-2 font-medium text-gray-900 dark:text-gray-white">{{ perusahaan.id
-                                }}
+                            <td class="border px-6 py-2 font-medium text-gray-900 dark:text-gray-white">{{ index + 1 }}
                             </td>
                             <td class="border px-6 py-2 text-gray-600 dark:text-gray-300">{{ perusahaan.nama_perusahaan
-                                }}
+                            }}
                             </td>
                             <td class="border px-6 py-2">
                                 <Link :href="`/perusahaan/${perusahaan.id}/edit`"
