@@ -13,20 +13,16 @@ class JenisAngkutansTableSeeder extends Seeder
      */
     public function run(): void
     {
-        JenisAngkutan::factory()->create([
-            'Nama_Jenis_Angkutan' => 'AKDP',
-        ]);
-        JenisAngkutan::factory()->create([
-            'Nama_Jenis_Angkutan' => 'AKAP',
-        ]);
-        JenisAngkutan::factory()->create([
-            'Nama_Jenis_Angkutan' => 'Bus Pariwisata',
-        ]);
-        JenisAngkutan::factory()->create([
-            'Nama_Jenis_Angkutan' => 'Angkutan Barang',
-        ]);
-        JenisAngkutan::factory()->create([
-            'Nama_Jenis_Angkutan' => 'Angkutan Desa',
-        ]);
+        $data = [
+            ['Nama_Jenis_Angkutan' => 'AKDP'],
+            ['Nama_Jenis_Angkutan' => 'AKAP'],
+            ['Nama_Jenis_Angkutan' => 'Bus Pariwisata'],
+            ['Nama_Jenis_Angkutan' => 'Angkutan Barang'],
+            ['Nama_Jenis_Angkutan' => 'Angkutan Desa'],
+        ];
+
+        foreach ($data as $row) {
+            JenisAngkutan::firstOrCreate($row);
+        }
     }
 }
