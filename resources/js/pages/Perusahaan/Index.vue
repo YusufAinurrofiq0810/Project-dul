@@ -66,7 +66,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                     <tbody>
                         <tr v-for="(perusahaan, index) in props.perusahaans" :key="perusahaan.id"
                             class="add-bg-white add:dark:bg-gray-800 even:bg-gray-50 dark:even:bg-gray-700">
-                            <td class="border px-6 py-2 font-medium text-gray-900 dark:text-gray-white">{{ index + 1 }}
+                            <td class="border px-6 py-2 font-medium text-gray-600 dark:text-gray-300">{{ index + 1 }}
                             </td>
                             <td class="border px-6 py-2 text-gray-600 dark:text-gray-300">{{ perusahaan.nama_perusahaan
                             }}
