@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('angkutans', function (Blueprint $table) {
-            $table->renameColumn('daya_angkut', 'Daya_Angkut_Orang');
-            $table->renameColumn('kg', 'Daya_Angkut_KG');
+            $table->renameColumn('Daya_Angkut', 'Daya_Angkut_Orang');
+            $table->renameColumn('KG', 'Daya_Angkut_KG');
         });
     }
 
@@ -23,8 +23,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('angkutans', function (Blueprint $table) {
-            $table->renameColumn('Daya_Angkut_Orang', 'daya_angkut');
-            $table->renameColumn('Daya_Angkut_KG', 'kg');
+            $table->renameColumn('Daya_Angkut_Orang', 'Daya_Angkut');
+            $table->renameColumn('Daya_Angkut_KG', 'KG');
         });
     }
 };
