@@ -5,6 +5,7 @@ import { Head, Link, useForm } from '@inertiajs/vue3';
 import { Input } from '@/components/ui/input'; // Asumsi komponen Input dari shadcn/ui atau sejenisnya
 import { Label } from '@/components/ui/label'; // Asumsi komponen Label dari shadcn/ui atau sejenisnya
 import Button from '@/components/ui/button/Button.vue'; // Asumsi komponen Button dari shadcn/ui atau sejenisnya
+import Swal from 'sweetalert2'; // Uncomment if you want to use SweetAlert2 for notifications
 // import InputError from '@/components/InputError.vue'; // Asumsi ini adalah komponen untuk menampilkan error validasi
 
 // Define the type for a company
@@ -45,6 +46,13 @@ function submit() {
         onSuccess: () => {
             // Opsional: Tampilkan pesan sukses atau redirect
             console.log('Merek berhasil diperbarui!');
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: 'Merek berhasil diperbarui.',
+                timer: 2000,
+                showConfirmButton: false,
+            });
             // You might want to redirect to the list page or show page after successful update
             // e.g., Inertia.visit('/merek');
         },

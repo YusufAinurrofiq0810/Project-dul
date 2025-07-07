@@ -2,10 +2,11 @@
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/vue3';
-import { Input } from '@/components/ui/input'; // Asumsi komponen Input dari shadcn/ui atau sejenisnya
-import { Label } from '@/components/ui/label'; // Asumsi komponen Label dari shadcn/ui atau sejenisnya
-import Button from '@/components/ui/button/Button.vue'; // Asumsi komponen Button dari shadcn/ui atau sejenisnya
-// import InputError from '@/components/InputError.vue'; // Asumsi ini adalah komponen untuk menampilkan error validasi
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import Button from '@/components/ui/button/Button.vue';
+import InputError from '@/components/InputError.vue'; // Pastikan ini ada dan berfungsi
+import Swal from 'sweetalert2'; // <-- Import SweetAlert2 di sini
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -16,23 +17,41 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 // Inisialisasi form dengan field 'nama_merek'
 const form = useForm({
-    nama_merek: "", // Gunakan nama_merek untuk data merek
+    nama_merek: "",
 });
 
 // Fungsi untuk menangani submit form
 function submit() {
-    form.post('/merek', { // Mengirim data form ke endpoint /merek
+    form.post('/merek', {
         onSuccess: () => {
             // Reset form setelah berhasil submit
             form.reset();
-            // Opsional: Tampilkan pesan sukses atau redirect
-            console.log('Merek berhasil dibuat!');
+            // Tampilkan pesan sukses menggunakan SweetAlert2
+            Swal.fire({
+                title: 'Berhasil!',
+                text: 'Merek berhasil ditambahkan.',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            });
         },
         onError: (errors) => {
             // Tangani error validasi atau error lainnya dari server
             console.error('Terjadi kesalahan saat membuat merek:', errors);
-            // Inertia.js secara otomatis akan mengisi `form.errors`
-            // yang bisa Anda tampilkan di samping input field
+
+            // Tampilkan pesan error menggunakan SweetAlert2
+            // Anda bisa menampilkan pesan error umum atau detail dari `errors`
+            let errorMessage = 'Terjadi kesalahan saat menyimpan merek.';
+            if (errors && Object.keys(errors).length > 0) {
+                // Jika ada error validasi spesifik, bisa diambil yang pertama
+                errorMessage = Object.values(errors)[0] as string;
+            }
+
+            Swal.fire({
+                title: 'Gagal!',
+                text: errorMessage,
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
         },
     });
 }
@@ -57,6 +76,7 @@ function submit() {
                         <Input id="nama_merek" type="text"
                             class="mt-1 block w-full md:w-1/2 lg:w-1/3 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                             required autocomplete="off" placeholder="Masukkan nama merek" v-model="form.nama_merek" />
+                        <InputError :message="form.errors.nama_merek" class="mt-2" />
                     </div>
                     <div class="mt-4">
                         <Button type="submit" :disabled="form.processing"

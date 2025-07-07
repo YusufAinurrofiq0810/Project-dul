@@ -2,6 +2,7 @@
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/vue3';
+import Swal from 'sweetalert2'; // Import SweetAlert2 for notifications
 
 // Define the type for a company
 interface merek {
@@ -24,6 +25,13 @@ function deleteMerek(id: number) {
             onSuccess: () => {
                 // Opsional: Tampilkan pesan sukses atau redirect
                 console.log('Merek berhasil dihapus');
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: 'Merek berhasil dihapus.',
+                    timer: 2000,
+                    showConfirmButton: false,
+                });
             },
             onError: (errors) => {
                 // Tangani error yang terjadi saat penghapusan
@@ -69,7 +77,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                             <td class="border px-6 py-2 font-medium text-gray-600 dark:text-gray-300">{{ index + 1 }}
                             </td>
                             <td class="border px-6 py-2 text-gray-600 dark:text-gray-300">{{ merek.nama_merek
-                            }}
+                                }}
                             </td>
                             <td class="border px-6 py-2">
                                 <Link :href="`/merek/${merek.id}/edit`"

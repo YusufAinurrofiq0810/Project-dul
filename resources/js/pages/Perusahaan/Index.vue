@@ -2,6 +2,7 @@
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/vue3';
+import Swal from 'sweetalert2'; // Import SweetAlert2 for notifications
 
 // Define the type for a company
 interface Perusahaan {
@@ -25,6 +26,13 @@ function deletePerusahaan(id: number) {
             onSuccess: () => {
                 // Optionally, you can show a success message or redirect
                 console.log('Perusahaan deleted successfully');
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: 'Perusahaan has been deleted.',
+                    timer: 2000,
+                    showConfirmButton: false,
+                });
             },
             onError: (errors) => {
                 // Handle any errors that occur during deletion
@@ -69,7 +77,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                             <td class="border px-6 py-2 font-medium text-gray-600 dark:text-gray-300">{{ index + 1 }}
                             </td>
                             <td class="border px-6 py-2 text-gray-600 dark:text-gray-300">{{ perusahaan.nama_perusahaan
-                            }}
+                                }}
                             </td>
                             <td class="border px-6 py-2">
                                 <Link :href="`/perusahaan/${perusahaan.id}/edit`"

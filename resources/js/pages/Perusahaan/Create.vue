@@ -5,6 +5,7 @@ import { Head, Link, useForm } from '@inertiajs/vue3';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Button from '@/components/ui/button/Button.vue';
+import Swal from 'sweetalert2';
 
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -25,9 +26,22 @@ function submit() {
         onSuccess: () => {
             form.reset();
             console.log('Perusahaan berhasil dibuat!');
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: 'Perusahaan berhasil dibuat.',
+                timer: 2000,
+                showConfirmButton: false,
+            });
         },
         onError: (errors) => {
             console.error('Terjadi kesalahan saat membuat perusahaan:', errors);
+            Swal.fire({
+                title: 'Gagal!',
+                text: 'Terjadi kesalahan saat menyimpan perusahaan.',
+                icon: 'error',
+                confirmButtonText: 'OK',
+            });
         },
     });
 }

@@ -5,6 +5,7 @@ import { type BreadcrumbItem } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ref, watch } from 'vue'; // Import ref and watch
 import { router } from '@inertiajs/vue3'; // Import router for manual visits
+import Swal from 'sweetalert2'; // Import SweetAlert2 for notifications
 
 // Definisikan tipe untuk objek Perusahaan (relasi)
 interface Perusahaan {
@@ -93,11 +94,22 @@ function deleteAngkutan(id: number) {
         deleteForm.delete(`/angkutan/${id}`, {
             onSuccess: () => {
                 console.log('Angkutan berhasil dihapus');
-                // Tambahkan logika notifikasi sukses (misal: flash message)
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: 'Angkutan berhasil dihapus.',
+                    timer: 2000,
+                    showConfirmButton: false,
+                });
             },
             onError: (errors) => {
                 console.error('Terjadi kesalahan saat menghapus angkutan:', errors);
-                // Tampilkan error ke pengguna
+                Swal.fire({
+                    title: 'Gagal!',
+                    text: 'Terjadi kesalahan saat menghapus angkutan.',
+                    icon: 'error',
+                    confirmButtonText: 'OK',
+                });
             },
         });
     }
@@ -116,7 +128,13 @@ function submitImport() {
             onSuccess: () => {
                 console.log('Data angkutan berhasil diimpor!');
                 importForm.reset(); // Reset form setelah sukses
-                // Tambahkan logika notifikasi sukses (misal: flash message)
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: 'Data angkutan berhasil diimpor.',
+                    timer: 2000,
+                    showConfirmButton: false,
+                });
             },
             onError: (errors) => {
                 console.error('Terjadi kesalahan saat mengimpor angkutan:', errors);

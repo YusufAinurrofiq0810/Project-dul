@@ -5,6 +5,7 @@ import { Head, Link, useForm } from '@inertiajs/vue3';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Button from '@/components/ui/button/Button.vue';
+import Swal from 'sweetalert2'; // Import SweetAlert2 for notifications
 
 // Define types for related models
 interface Perusahaan {
@@ -117,6 +118,13 @@ function submit() {
         form.put(`/angkutan/${props.angkutan?.id}`, {
             onSuccess: () => {
                 console.log('Angkutan berhasil diperbarui!');
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: 'Angkutan berhasil diperbarui.',
+                    timer: 2000,
+                    showConfirmButton: false,
+                });
             },
             onError: (errors) => {
                 console.error('Terjadi kesalahan saat memperbarui angkutan:', errors);
