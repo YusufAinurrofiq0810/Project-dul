@@ -43,7 +43,7 @@ class AngkutanController extends Controller
             });
         }
 
-        $angkutans = $query->paginate(10); // Apply pagination after filtering
+        $angkutans = $query->orderBy('created_at', 'desc')->paginate(10); // Apply pagination after filtering
 
         return Inertia::render('Angkutan/Index', [
             'angkutans' => $angkutans,
