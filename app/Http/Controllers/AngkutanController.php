@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Exports\AngkutanExport;
 use App\Exports\AngkutanImportTemplate;
 use App\Imports\ImportAngkutan;
+use App\Imports\ImportAngkutanV2;
 use App\Models\Angkutan;
 use App\Models\JenisAngkutan;
 use App\Models\Merek;
@@ -225,14 +226,16 @@ class AngkutanController extends Controller
         $request->validate([
             'file' => 'required|mimes:xlsx,csv,xls',
         ]);
-        // dd($request->all());
-        // Log::info('Import Angkutan Request: ', $request->all());
 
-        // Menggunakan Maatwebsite Excel untuk mengimpor data Angkutan dari file Excel
-        Excel::import(new ImportAngkutan, $request->file('file'));
-        // dd($request->file('file')->getClientOriginalName());
-        // Log::info('test import');
-        return redirect()->route('angkutan.index')->with('success', 'Angkutan imported successfully.');
+        try {
+            // Menggunakan Maatwebsite Excel untuk mengimpor data Angkutan dari file Excel
+            Excel::import(new ImportAngkutanV2, $request->file('file'));
+            return redirect()->route('angkutan.index')->with('success', 'Angkutan imported successfully.');
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors([
+                'file' => 'Terjadi kesalahan saat mengimpor file: ' . $e->getMessage(),
+            ]);
+        }
     }
 
     public function downloadImportTemplate() 

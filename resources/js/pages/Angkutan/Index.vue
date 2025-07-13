@@ -128,19 +128,24 @@ function submitImport() {
     if (importForm.file) {
         importForm.post('/angkutan/import', {
             onSuccess: () => {
-                console.log('Data angkutan berhasil diimpor!');
                 importForm.reset(); // Reset form setelah sukses
                 Swal.fire({
                     icon: 'success',
                     title: 'Berhasil!',
-                    text: 'Data angkutan berhasil diimpor.',
+                    text: 'Berhasil mengimpor data.',
                     timer: 2000,
                     showConfirmButton: false,
                 });
             },
             onError: (errors) => {
-                console.error('Terjadi kesalahan saat mengimpor angkutan:', errors);
                 // Tampilkan error ke pengguna
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal!',
+                    text: errors.file,
+                    timer: 2000,
+                    showConfirmButton: false,
+                });
             },
         });
     } else {
