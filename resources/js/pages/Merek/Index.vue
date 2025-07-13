@@ -23,7 +23,6 @@ function deleteMerek(id: number) {
     if (confirm('Apakah Anda yakin ingin menghapus merek ini?')) {
         form.delete(`/merek/${id}`, {
             onSuccess: () => {
-                // Opsional: Tampilkan pesan sukses atau redirect
                 console.log('Merek berhasil dihapus');
                 Swal.fire({
                     icon: 'success',
@@ -34,8 +33,29 @@ function deleteMerek(id: number) {
                 });
             },
             onError: (errors) => {
-                // Tangani error yang terjadi saat penghapusan
+                // 'errors' object now contains the errors passed from the backend via withErrors()
                 console.error('Terjadi kesalahan saat menghapus merek:', errors);
+
+                let errorMessage = 'Terjadi kesalahan yang tidak terduga saat menghapus merek.';
+
+                // Check if the specific error key 'delete_merek' exists
+                if (errors && errors.delete_merek) {
+                    errorMessage = errors.delete_merek;
+                }
+                // Fallback for general validation errors if you have them
+                else if (errors && Object.keys(errors).length > 0) {
+                    // This catches if there are other errors passed (e.g., from validation on other fields)
+                    // and takes the first one.
+                    errorMessage = Object.values(errors)[0] as string;
+                }
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal!',
+                    text: errorMessage,
+                    timer: 3000, // Beri waktu sedikit lebih lama agar pengguna bisa membaca
+                    showConfirmButton: true, // Biarkan tombol konfirmasi agar pengguna bisa menutup manual
+                });
             },
         });
     }

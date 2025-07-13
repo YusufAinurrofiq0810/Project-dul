@@ -73,7 +73,7 @@ class AngkutanController extends Controller
     public function store(Request $request)
     {
 
-        Log::info('test');
+        // Log::info('test');
         try {
             $validator = Validator::make($request->all(), [
                 'perusahaan_id' => 'required|exists:perusahaans,id',

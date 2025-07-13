@@ -14,4 +14,9 @@ class Perusahaan extends Model
     protected $fillable = [
         'nama_perusahaan',
     ];
+
+    public function angkutan()
+    {
+        return $this->hasMany(Angkutan::class);
+    }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Merek;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class MerekController extends Controller
@@ -85,10 +86,27 @@ class MerekController extends Controller
     {
         try {
             $merek = Merek::findOrFail($id);
+
+            // Jika merek memiliki angkutan terkait
+            if ($merek->angkutan()->count() > 0) {
+                // Gunakan redirect()->back()->withErrors() untuk error terkait logika bisnis.
+                // Inertia akan membaca ini dan memicu onError di frontend.
+                return redirect()->back()->withErrors([
+                    'delete_merek' => 'Tidak dapat menghapus merek karena masih terkait dengan data angkutan.'
+                ]);
+            }
+
+            // Jika tidak ada angkutan terkait, lanjutkan penghapusan
             $merek->delete();
-            return redirect()->route('merek.index')->with('success', 'Merek deleted successfully.');
+
+            // Jika berhasil, redirect dengan flash success message (ini akan memicu onSuccess)
+            return redirect()->route('merek.index')->with('success', 'Merek berhasil dihapus.');
         } catch (\Throwable $th) {
-            return redirect()->back()->with('error', 'Failed to delete merek: ' . $th->getMessage());
+            // Menangani kesalahan tak terduga
+            // Gunakan redirect()->back()->withErrors() untuk kesalahan umum.
+            return redirect()->back()->withErrors([
+                'delete_merek' => 'Terjadi kesalahan internal saat menghapus merek: ' . $th->getMessage()
+            ]);
         }
     }
 }

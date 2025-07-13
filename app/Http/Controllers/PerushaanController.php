@@ -88,10 +88,17 @@ class PerushaanController extends Controller
     {
         try {
             $perusahaan = Perusahaan::findOrFail($id);
+            if ($perusahaan->angkutan()->count() > 0) {
+                return redirect()->back()->withErrors([
+                    'delete_perusahaan' => 'Tidak dapat menghapus perusahaan karena masih terkait dengan data angkutan.'
+                ]);
+            }
             $perusahaan->delete();
             return redirect()->route('perusahaan.index')->with('success', 'Perusahaan deleted successfully.');
         } catch (\Throwable $th) {
-            return redirect()->back()->with('error', 'Failed to delete perusahaan: ' . $th->getMessage());
+            return redirect()->back()->withErrors([
+                'delete_perusahaan' => 'Terjadi kesalahan saat menghapus perusahaan: ' . $th->getMessage()
+            ]);
         }
     }
 }

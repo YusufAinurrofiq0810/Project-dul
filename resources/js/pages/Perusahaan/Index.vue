@@ -29,7 +29,7 @@ function deletePerusahaan(id: number) {
                 Swal.fire({
                     icon: 'success',
                     title: 'Success!',
-                    text: 'Perusahaan has been deleted.',
+                    text: 'Perusahaan berhasil dihapus.',
                     timer: 2000,
                     showConfirmButton: false,
                 });
@@ -37,6 +37,20 @@ function deletePerusahaan(id: number) {
             onError: (errors) => {
                 // Handle any errors that occur during deletion
                 console.error('Error deleting perusahaan:', errors);
+
+                let errorMessage = 'Terjadi kesalahan yang tidak terduga saat menghapus perusahaan.';
+                if (errors && errors.delete_perusahaan) {
+                    errorMessage = errors.delete_perusahaan;
+                } else if (errors && Object.keys(errors).length > 0) {
+                    errorMessage = Object.values(errors)[0] as string;
+                }
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal!',
+                    text: errorMessage,
+                    timer: 3000, // Give a bit more time for the user to read
+                    showConfirmButton: true, // Keep the confirm button for manual closure
+                });
             },
         });
     }
