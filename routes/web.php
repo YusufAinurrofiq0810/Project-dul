@@ -16,6 +16,7 @@ Route::get('dashboard', function () {
 
 Route::resource("perusahaan", PerushaanController::class)->middleware(['auth', 'verified']);
 Route::resource("merek", MerekController::class)->middleware(['auth', 'verified']);
+Route::get('/angkutan/download-import-template', [AngkutanController::class, 'downloadImportTemplate'])->name('angkutan.downloadImportTemplate')->middleware(['auth', 'verified']);
 Route::get('/angkutan/export', [AngkutanController::class, 'exportExcel'])->name('angkutan.export')->middleware(['auth', 'verified']);
 Route::post('/angkutan/import', [AngkutanController::class, 'importExcel'])->name('angkutan.import')->middleware(['auth', 'verified']);
 Route::resource("angkutan", AngkutanController::class)->middleware(['auth', 'verified']);

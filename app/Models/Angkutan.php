@@ -43,6 +43,7 @@ class Angkutan extends Model
         'Tahun_Pembuatan',
         'merek_id',
         'Alamat',
+        'keterangan',
     ];
 
     public function perusahaan()

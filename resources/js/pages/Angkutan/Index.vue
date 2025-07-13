@@ -58,6 +58,8 @@ interface Props {
     // Add a prop for the current filter value, so it persists on page load
     filterPerusahaan: string | null;
     filterJenisAngkutan: string | null;
+    perusahaanOptions: Perusahaan[];
+    jenisAngkutanOptions: JenisAngkutan[];
 }
 
 const props = defineProps<Props>();
@@ -147,6 +149,30 @@ function submitImport() {
     }
 }
 
+function downloadTemplate() {
+    fetch(route('angkutan.downloadImportTemplate'))
+        .then(async response => {
+            if (!response.ok) throw new Error('Download failed');
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'template.xlsx';
+            a.click();
+            window.URL.revokeObjectURL(url);
+        })
+        .catch(() => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: 'Gagal mengunduh template.',
+                timer: 2000,
+                showConfirmButton: false,
+            });
+        });
+}
+
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Angkutan',
@@ -171,6 +197,11 @@ const breadcrumbs: BreadcrumbItem[] = [
                 <a href="/angkutan/export"
                     class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 transition-colors">
                     Ekspor Angkutan
+                </a>
+
+                <a  @click="downloadTemplate"
+                    class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 transition-colors">
+                    Download Template Import Angkutan
                 </a>
 
                 <form @submit.prevent="submitImport" class="flex items-center gap-2">
@@ -203,9 +234,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                             <select id="perusahaanFilter" v-model="filterPerusahaan"
                                 class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-colors">
                                 <option value="">Semua Perusahaan</option>
-                                <option v-for="perusahaan in props.angkutans.data
-                                    .map(a => a.perusahaan)
-                                    .filter((v, i, arr) => v && arr.findIndex(p => p.id === v.id) === i)"
+                                <option v-for="perusahaan in props.perusahaanOptions"
                                     :key="perusahaan.id" :value="perusahaan.nama_perusahaan">
                                     {{ perusahaan.nama_perusahaan }}
                                 </option>
@@ -221,9 +250,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                             <select id="jenisAngkutanFilter" v-model="filterJenisAngkutan"
                                 class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-colors">
                                 <option value="">Semua Jenis Angkutan</option>
-                                <option v-for="jenis in props.angkutans.data
-                                    .map(a => a.jenis_angkutan)
-                                    .filter((v, i, arr) => v && arr.findIndex(j => j.id === v.id) === i)"
+                                <option v-for="jenis in props.jenisAngkutanOptions"
                                     :key="jenis.id" :value="jenis.Nama_Jenis_Angkutan">
                                     {{ jenis.Nama_Jenis_Angkutan }}
                                 </option>

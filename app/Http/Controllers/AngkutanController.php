@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exports\AngkutanExport;
+use App\Exports\AngkutanImportTemplate;
 use App\Imports\ImportAngkutan;
 use App\Models\Angkutan;
 use App\Models\JenisAngkutan;
@@ -25,8 +26,9 @@ class AngkutanController extends Controller
         $filterJenisAngkutan = $request->input('jenis_angkutan'); // Get the 'jenis_angkutan' query parameter
         $query = Angkutan::query();
         $query = Angkutan::with(['perusahaan', 'merek', 'jenisAngkutan']);
-        // dd(JenisAngkutan
-        //     ::all());
+
+        $perusahaan = Perusahaan::all();
+        $jenisAngkutan = JenisAngkutan::all();
 
         if ($filterPerusahaan) {
             $query->whereHas('perusahaan', function ($q) use ($filterPerusahaan) {
@@ -42,11 +44,12 @@ class AngkutanController extends Controller
 
         $angkutans = $query->paginate(10); // Apply pagination after filtering
 
-        // dd($angkutans->toArray());
         return Inertia::render('Angkutan/Index', [
             'angkutans' => $angkutans,
             'filterPerusahaan' => $filterPerusahaan,
             'filterJenisAngkutan' => $filterJenisAngkutan,
+            'perusahaanOptions' => $perusahaan,
+            'jenisAngkutanOptions' => $jenisAngkutan,
         ]);
     }
 
@@ -72,8 +75,6 @@ class AngkutanController extends Controller
      */
     public function store(Request $request)
     {
-
-        // Log::info('test');
         try {
             $validator = Validator::make($request->all(), [
                 'perusahaan_id' => 'required|exists:perusahaans,id',
@@ -101,7 +102,8 @@ class AngkutanController extends Controller
                 'Daya_Angkut_Orang' => 'nullable|numeric',
                 'Daya_Angkut_KG' => 'nullable|numeric',
                 'Tahun_Pembuatan' => 'nullable|numeric',
-                'Alamat' => 'nullable|string|max:255',
+                'Alamat' => 'nullable|string',
+                'keterangan' => 'nullable|string',
             ]);
             // Jika validasi berhasil, lanjutkan dengan logika penyimpanan data
             Angkutan::create($validator->validated());
@@ -158,8 +160,6 @@ class AngkutanController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        // dd($request->all());
-        // Log::info('Update Angkutan Request: ', $request->all());
         try {
             $request->validate([
                 'perusahaan_id' => 'required|exists:perusahaans,id',
@@ -188,9 +188,9 @@ class AngkutanController extends Controller
                 'Daya_Angkut' => 'nullable|numeric',
                 'KG' => 'nullable|numeric',
                 'Tahun_Pembuatan' => 'nullable|numeric|min:1900|max:' . date('Y'),
-                'Alamat' => 'nullable|string|max:255'
+                'Alamat' => 'nullable|string',
+                'keterangan' => 'nullable|string',
             ]);
-            Log::info($request->all());
             $angkutan = Angkutan::findOrFail($id);
             // $request->merge(['Tahun_Pembuatan' => $request->input('Tahun_Pembuatan') . '-01-01']); // Format tahun pembuatan menjadi YYYY-MM-DD
             $angkutan->update($request->all());
@@ -233,5 +233,10 @@ class AngkutanController extends Controller
         // dd($request->file('file')->getClientOriginalName());
         // Log::info('test import');
         return redirect()->route('angkutan.index')->with('success', 'Angkutan imported successfully.');
+    }
+
+    public function downloadImportTemplate() 
+    {
+        return Excel::download(new AngkutanImportTemplate, 'template.xlsx');
     }
 }
