@@ -90,6 +90,7 @@ function clearFilters() {
     filterJenisAngkutan.value = '';
 }
 
+
 function deleteAngkutan(id: number) {
     console.warn('Konfirmasi Penghapusan: Apakah Anda yakin ingin menghapus angkutan ini?');
     if (confirm('Apakah Anda yakin ingin menghapus angkutan ini?')) { // Added a proper confirmation
@@ -154,6 +155,20 @@ function submitImport() {
     }
 }
 
+
+const perusahaan = filterPerusahaan.value || null;
+const jenisAngkutan = filterJenisAngkutan.value || null;
+
+// Redirect to the export route with filters
+router.get('/angkutan/export', {
+    perusahaan: perusahaan,
+    jenis_angkutan: jenisAngkutan,
+}, {
+    preserveState: true, // Keep the current scroll position
+    replace: true,       // Replace the current history entry
+});
+
+
 function downloadTemplate() {
     fetch(route('angkutan.downloadImportTemplate'))
         .then(async response => {
@@ -199,12 +214,12 @@ const breadcrumbs: BreadcrumbItem[] = [
                     Buat Angkutan
                 </a>
 
-                <a href="/angkutan/export"
-                    class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 transition-colors">
-                    Ekspor Angkutan
+                <a :href="`/angkutan/export?perusahaan=${filterPerusahaan}&jenis_angkutan=${filterJenisAngkutan}`"
+                    class="px-4 py-2 bg-green-600 text-white rounded-lg">
+                    Export Angkutan
                 </a>
 
-                <a  @click="downloadTemplate"
+                <a @click="downloadTemplate"
                     class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 transition-colors">
                     Download Template Import Angkutan
                 </a>
@@ -239,8 +254,8 @@ const breadcrumbs: BreadcrumbItem[] = [
                             <select id="perusahaanFilter" v-model="filterPerusahaan"
                                 class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-colors">
                                 <option value="">Semua Perusahaan</option>
-                                <option v-for="perusahaan in props.perusahaanOptions"
-                                    :key="perusahaan.id" :value="perusahaan.nama_perusahaan">
+                                <option v-for="perusahaan in props.perusahaanOptions" :key="perusahaan.id"
+                                    :value="perusahaan.nama_perusahaan">
                                     {{ perusahaan.nama_perusahaan }}
                                 </option>
                             </select>
@@ -255,8 +270,8 @@ const breadcrumbs: BreadcrumbItem[] = [
                             <select id="jenisAngkutanFilter" v-model="filterJenisAngkutan"
                                 class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-colors">
                                 <option value="">Semua Jenis Angkutan</option>
-                                <option v-for="jenis in props.jenisAngkutanOptions"
-                                    :key="jenis.id" :value="jenis.Nama_Jenis_Angkutan">
+                                <option v-for="jenis in props.jenisAngkutanOptions" :key="jenis.id"
+                                    :value="jenis.Nama_Jenis_Angkutan">
                                     {{ jenis.Nama_Jenis_Angkutan }}
                                 </option>
                             </select>

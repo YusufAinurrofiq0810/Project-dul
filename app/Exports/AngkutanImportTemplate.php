@@ -9,16 +9,16 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 class AngkutanImportTemplate implements FromCollection, WithHeadings, ShouldAutoSize
 {
     /**
-    * @return \Illuminate\Support\Collection
-    */
+     * @return \Illuminate\Support\Collection
+     */
     public function collection()
     {
         return collect([]);
     }
 
     /**
-    * @return array
-    */
+     * @return array
+     */
     public function headings(): array
     {
         return [

@@ -214,12 +214,34 @@ class AngkutanController extends Controller
         }
     }
 
-    public function exportExcel()
+    public function exportExcel(Request $request)
     {
-        // Menggunakan Maatwebsite Excel untuk mengekspor data Angkutan ke file Excel
-        return Excel::download(new AngkutanExport, 'angkutan.xlsx');
-    }
 
+        $jenisAngkutanId = null;
+        $perusahaanId = null;
+        $jenisAngkutanNama = trim($request->input('jenis_angkutan'));
+        $perusahaanNama = trim($request->input('perusahaan'));
+        // dd($jenisAngkutanNama, $perusahaanNama);
+
+        // Cari ID berdasarkan nama jika nama tidak kosong
+        if (!empty($jenisAngkutanNama)) {
+            $jenisAngkutan = JenisAngkutan::whereRaw('LOWER(Nama_Jenis_Angkutan) = ?', [strtolower($jenisAngkutanNama)])->first();
+            if ($jenisAngkutan) {
+                $jenisAngkutanId = $jenisAngkutan->id;
+            }
+        }
+
+        if (!empty($perusahaanNama)) {
+            $perusahaan = Perusahaan::whereRaw('LOWER(nama_perusahaan) = ?', [strtolower($perusahaanNama)])->first();
+            if ($perusahaan) {
+                $perusahaanId = $perusahaan->id;
+            }
+        }
+        // dd($jenisAngkutanId, $perusahaanId);
+
+        return Excel::download(new AngkutanExport($jenisAngkutanId, $perusahaanId), 'angkutan.xlsx');
+        dd($jenisAngkutanId, $perusahaanId);
+    }
     public function importExcel(Request $request)
     {
         // Validasi file yang diunggah
@@ -238,7 +260,7 @@ class AngkutanController extends Controller
         }
     }
 
-    public function downloadImportTemplate() 
+    public function downloadImportTemplate()
     {
         return Excel::download(new AngkutanImportTemplate, 'template.xlsx');
     }
