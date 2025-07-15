@@ -53,6 +53,8 @@ interface Angkutan {
     Tahun_Pembuatan: string; // Stored as 'YYYY-01-01' in DB, but we'll extract the year
     Alamat: string;
     keterangan: string;
+    trayek: string;
+    tipe: string;
 }
 
 // Define props for the component, including lists for dropdowns and an optional Angkutan object for editing
@@ -91,11 +93,11 @@ const form = useForm({
     Masa_Berlaku_SK_Start_Date: props.angkutan?.Masa_berlaku_SK_Start_date || "",
     Masa_Berlaku_SK_End_Date: props.angkutan?.Masa_berlaku_SK_End_date || "",
     keterangan_perizinan: props.angkutan?.keterangan_perizinan || 1,
-    NIK: props.angkutan?.NIK || "",
+    // NIK: props.angkutan?.NIK || "",
     Jenis_BBM: props.angkutan?.Jenis_BBM || "",
     Masa_Berlaku_STNK: props.angkutan?.Masa_Berlaku_STNK || "",
     No_Rangka: props.angkutan?.No_Rangka || "",
-    No_Trayek: props.angkutan?.No_Trayek || "",
+    // No_Trayek: props.angkutan?.No_Trayek || "",
     TNKB: props.angkutan?.TNKB || "",
     No_uji: props.angkutan?.No_uji || "",
     No_KP: props.angkutan?.No_KP || "",
@@ -103,7 +105,7 @@ const form = useForm({
     No_SK: props.angkutan?.No_SK || "",
     No_Mesin: props.angkutan?.No_Mesin || "",
     // Tanggal_SK: props.angkutan?.Tanggal_SK || "",
-    Kode_Trayek: props.angkutan?.Kode_Trayek || "",
+    // Kode_Trayek: props.angkutan?.Kode_Trayek || "",
     No_Seri: props.angkutan?.No_Seri || "",
     Daya_Angkut_Orang: props.angkutan?.Daya_Angkut_Orang || "",
     Daya_Angkut_KG: props.angkutan?.Daya_Angkut_KG || "",
@@ -111,6 +113,8 @@ const form = useForm({
     Tahun_Pembuatan: props.angkutan?.Tahun_Pembuatan ? new Date(props.angkutan.Tahun_Pembuatan).getFullYear().toString() : "",
     Alamat: props.angkutan?.Alamat || "",
     keterangan: props.angkutan?.keterangan || "",
+    trayek: props.angkutan?.trayek || "",
+    tipe: props.angkutan?.tipe || "",
 });
 
 
@@ -257,15 +261,6 @@ function submit() {
                             </div>
                         </div>
 
-                        <!-- NIK -->
-                        <div class="grid gap-2">
-                            <Label for="nik">NIK</Label>
-                            <Input id="nik" type="text"
-                                class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                placeholder="Masukkan NIK" v-model="form.NIK" />
-                            <div v-if="form.errors.NIK" class="text-red-500 text-sm">{{ form.errors.NIK }}</div>
-                        </div>
-
                         <!-- Masa Berlaku STNK -->
                         <div class="grid gap-2">
                             <Label for="masa_berlaku_stnk">Masa Berlaku STNK</Label>
@@ -278,22 +273,21 @@ function submit() {
 
                         <!-- No. Trayek -->
                         <div class="grid gap-2">
-                            <Label for="no_trayek">No. Trayek</Label>
-                            <Input id="no_trayek" type="text"
+                            <Label for="trayek">Trayek</Label>
+                            <Input id="trayek" type="text"
                                 class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                placeholder="Masukkan No. Trayek" v-model="form.No_Trayek" />
-                            <div v-if="form.errors.No_Trayek" class="text-red-500 text-sm">{{ form.errors.No_Trayek }}
+                                placeholder="Masukkan Trayek" v-model="form.trayek" />
+                            <div v-if="form.errors.trayek" class="text-red-500 text-sm">{{ form.errors.trayek }}
                             </div>
                         </div>
 
-                        <!-- Kode Trayek -->
-                        <div class="grid gap-2">
-                            <Label for="kode_trayek">Kode Trayek</Label>
-                            <Input id="kode_trayek" type="text"
+                        <!-- Tipe -->
+                        <div class="grid col-span-2 gap-2">
+                            <Label for="tipe">Tipe</Label>
+                            <Input id="tipe" type="text"
                                 class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                placeholder="Masukkan Kode Trayek" v-model="form.Kode_Trayek" />
-                            <div v-if="form.errors.Kode_Trayek" class="text-red-500 text-sm">
-                                {{ form.errors.Kode_Trayek }}</div>
+                                placeholder="Masukkan tipe" v-model="form.tipe" />
+                            <div v-if="form.errors.tipe" class="text-red-500 text-sm">{{ form.errors.tipe }}</div>
                         </div>
 
                         <!-- No. Rangka -->

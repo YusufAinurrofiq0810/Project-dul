@@ -216,14 +216,6 @@ function submit() {
                                 placeholder="Masukkan Jenis BBM" v-model="form.Jenis_BBM" />
                         </div>
 
-                        <!-- NIK -->
-                        <div class="grid gap-2">
-                            <Label for="nik">NIK</Label>
-                            <Input id="nik" type="text"
-                                class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                placeholder="Masukkan NIK" v-model="form.NIK" />
-                        </div>
-
                         <!-- Masa Berlaku STNK -->
                         <div class="grid gap-2">
                             <Label for="masa_berlaku_stnk">Masa Berlaku STNK</Label>
