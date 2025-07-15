@@ -252,7 +252,7 @@ function submit() {
                         </div>
 
                         <!-- Jenis BBM -->
-                        <div class="grid col-span-2 gap-2">
+                        <div class="grid gap-2">
                             <Label for="jenis_bbm">Jenis BBM</Label>
                             <Input id="jenis_bbm" type="text"
                                 class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
@@ -272,7 +272,7 @@ function submit() {
                         </div>
 
                         <!-- No. Trayek -->
-                        <div class="grid gap-2">
+                        <div class="grid col-span-2 gap-2">
                             <Label for="trayek">Trayek</Label>
                             <Input id="trayek" type="text"
                                 class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
