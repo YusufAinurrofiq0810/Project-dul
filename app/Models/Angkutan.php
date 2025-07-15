@@ -24,10 +24,10 @@ class Angkutan extends Model
         'Masa_Berlaku_SK_Start_Date',
         'Masa_Berlaku_SK_End_Date',
         'keterangan_perizinan',
-        'NIK',
+        // 'NIK',
         'Jenis_BBM',
         'Masa_Berlaku_STNK',
-        'No_Trayek',
+        // 'No_Trayek',
         'No_Rangka',
         'TNKB',
         'No_uji',
@@ -36,7 +36,7 @@ class Angkutan extends Model
         'No_Mesin',
         'No_SK',
         // 'Tanggal_SK',
-        'Kode_Trayek',
+        // 'Kode_Trayek',
         'No_Seri',
         'Daya_Angkut_Orang',
         'Daya_Angkut_KG',
@@ -44,6 +44,8 @@ class Angkutan extends Model
         'merek_id',
         'Alamat',
         'keterangan',
+        'trayek',
+        'tipe',
     ];
 
     public function perusahaan()
