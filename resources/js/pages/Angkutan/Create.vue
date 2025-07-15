@@ -54,20 +54,22 @@ const form = useForm({
     Jenis_BBM: "",
     Masa_Berlaku_STNK: "",
     No_Rangka: "",
-    No_Trayek: "",
+    // No_Trayek: "",
     TNKB: "",
     No_uji: "",
     No_KP: "",
     No_NIB: "",
     No_SK: "",
     No_Mesin: "",
-    Kode_Trayek: "",
+    // Kode_Trayek: "",
     No_Seri: "",
     Daya_Angkut_Orang: 0,
     Daya_Angkut_KG: 0,
     Tahun_Pembuatan: 0,
     Alamat: "",
     keterangan: "",
+    trayek: "",
+    tipe: "",
 });
 
 function submit() {
@@ -230,20 +232,20 @@ function submit() {
                                 v-model="form.Masa_Berlaku_STNK" />
                         </div>
 
-                        <!-- No. Trayek -->
-                        <div class="grid gap-2">
-                            <Label for="no_trayek">No. Trayek</Label>
-                            <Input id="no_trayek" type="text"
+                        <!-- Trayek -->
+                        <div class="grid col-span-2 gap-2">
+                            <Label for="trayek">Trayek</Label>
+                            <Input id="trayek" type="text"
                                 class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                placeholder="Masukkan No. Trayek" v-model="form.No_Trayek" />
+                                placeholder="Masukkan Trayek" v-model="form.trayek" />
                         </div>
 
-                        <!-- Kode Trayek -->
-                         <div class="grid gap-2">
-                            <Label for="kode_trayek">Kode Trayek</Label>
-                            <Input id="kode_trayek" type="text"
+                        <!-- Tipe -->
+                        <div class="grid col-span-2 gap-2">
+                            <Label for="tipe">Tipe</Label>
+                            <Input id="tipe" type="text"
                                 class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                placeholder="Masukkan Kode Trayek" v-model="form.Kode_Trayek" />
+                                placeholder="Masukkan tipe" v-model="form.tipe" />
                         </div>
                         
                         <!-- No. Rangka -->
