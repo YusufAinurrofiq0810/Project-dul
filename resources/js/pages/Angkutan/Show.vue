@@ -29,7 +29,7 @@ interface Angkutan {
     Masa_berlaku_SK_Start_date: string; // Assuming YYYY-MM-DD format
     Masa_berlaku_SK_End_date: string; // Assuming YYYY-MM-DD format
     Keterangan_Perizinan: boolean;
-    NIK: string;
+    tipe: string;
     Jenis_BBM: string;
     Masa_Berlaku_STNK: string; // Assuming YYYY-MM-DD format
     No_Rangka: string;
@@ -39,9 +39,9 @@ interface Angkutan {
     No_NIB: string;
     No_SK: string;
     No_Mesin: string | null;
-    // Tanggal_SK: string; // Assuming YYYY-MM-DD format
-    Kode_Trayek: string;
+    trayek: string;
     No_Seri: string;
+    keterangan: string;
     Daya_Angkut_Orang: number;
     Daya_Angkut_KG: number;
     Tahun_Pembuatan: string; // Stored as 'YYYY-01-01' in DB, but we'll extract the year
@@ -140,8 +140,8 @@ const displayTahunPembuatan = props.angkutan.Tahun_Pembuatan ?
                         <span>{{ props.angkutan.Keterangan_Perizinan ? 'Aktif' : 'Tidak Aktif' }}</span>
                     </div>
                     <div class="flex flex-col">
-                        <span class="font-semibold text-gray-500 dark:text-gray-400">NIK:</span>
-                        <span>{{ props.angkutan.NIK }}</span>
+                        <span class="font-semibold text-gray-500 dark:text-gray-400">tipe:</span>
+                        <span>{{ props.angkutan.tipe }}</span>
                     </div>
                     <div class="flex flex-col">
                         <span class="font-semibold text-gray-500 dark:text-gray-400">Jenis BBM:</span>
@@ -156,8 +156,8 @@ const displayTahunPembuatan = props.angkutan.Tahun_Pembuatan ?
                         <span>{{ props.angkutan.No_Rangka }}</span>
                     </div>
                     <div class="flex flex-col">
-                        <span class="font-semibold text-gray-500 dark:text-gray-400">No. Trayek:</span>
-                        <span>{{ props.angkutan.No_Trayek }}</span>
+                        <span class="font-semibold text-gray-500 dark:text-gray-400">Keterangan:</span>
+                        <span>{{ props.angkutan.keterangan }}</span>
                     </div>
                     <div class="flex flex-col">
                         <span class="font-semibold text-gray-500 dark:text-gray-400">TNKB:</span>
@@ -181,8 +181,8 @@ const displayTahunPembuatan = props.angkutan.Tahun_Pembuatan ?
                         <span>{{ props.angkutan.No_Mesin || 'N/A' }}</span>
                     </div>
                     <div class="flex flex-col">
-                        <span class="font-semibold text-gray-500 dark:text-gray-400">Kode Trayek:</span>
-                        <span>{{ props.angkutan.Kode_Trayek }}</span>
+                        <span class="font-semibold text-gray-500 dark:text-gray-400">Trayek:</span>
+                        <span>{{ props.angkutan.trayek }}</span>
                     </div>
                     <div class="flex flex-col">
                         <span class="font-semibold text-gray-500 dark:text-gray-400">No. Seri:</span>

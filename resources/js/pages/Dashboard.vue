@@ -2,7 +2,6 @@
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
-// import PlaceholderPattern from '../components/PlaceholderPattern.vue'; // Pastikan komponen ini tersedia
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -18,10 +17,14 @@ const breadcrumbs: BreadcrumbItem[] = [
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <PlaceholderPattern class="mb-4">
-            <div class="flex justify-center items-center h-full p-4">
+            <div class="flex flex-col justify-center items-start h-full p-4 space-y-4">
                 <h2
-                    class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-center font-extrabold text-gray-900 dark:text-white leading-tight">
-                    Selamat Datang di Database Penumpang dan Angkutan Barang
+                    class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-left mx-auto  font-extrabold text-gray-900 dark:text-white leading-tight">
+                    Selamat Datang di Database Angkutan
+                </h2>
+                <h2
+                    class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-left mx-auto  font-extrabold text-gray-900 dark:text-white leading-tight">
+                    Penumpang dan Barang
                 </h2>
             </div>
         </PlaceholderPattern>
@@ -31,6 +34,5 @@ const breadcrumbs: BreadcrumbItem[] = [
                 <img src="/business.png" alt="Business" class="max-w-full h-auto rounded shadow" />
             </div>
         </PlaceholderPattern>
-
     </AppLayout>
 </template>
