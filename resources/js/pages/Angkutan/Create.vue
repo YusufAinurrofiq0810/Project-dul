@@ -49,7 +49,7 @@ const form = useForm({
     Masa_Berlaku_KP_End_Date: "",
     Masa_Berlaku_SK_Start_Date: "",
     Masa_Berlaku_SK_End_Date: "",
-    keterangan_perizinan: "", // lowercase in model
+    keterangan_perizinan: 0, // lowercase in model
     NIK: "",
     Jenis_BBM: "",
     Masa_Berlaku_STNK: "",
@@ -63,9 +63,9 @@ const form = useForm({
     No_Mesin: "",
     // Kode_Trayek: "",
     No_Seri: "",
-    Daya_Angkut_Orang: 0,
-    Daya_Angkut_KG: 0,
-    Tahun_Pembuatan: 0,
+    Daya_Angkut_Orang: '',
+    Daya_Angkut_KG: '',
+    Tahun_Pembuatan: '',
     Alamat: "",
     keterangan: "",
     trayek: "",
@@ -87,7 +87,6 @@ function submit() {
     form.transform(() => submitData).post(route('angkutan.store'), {
         onSuccess: () => {
             form.reset();
-            console.log('Angkutan berhasil dibuat!');
             Swal.fire({
                 icon: 'success',
                 title: 'Berhasil!',
@@ -323,7 +322,7 @@ function submit() {
                         <!-- Tahun Pembuatan -->
                         <div class="grid col-span-2 gap-2">
                             <Label for="tahun_pembuatan">Tahun Pembuatan</Label>
-                            <Input id="tahun_pembuatan" type="number" min="1900" :max="new Date().getFullYear()"
+                            <Input id="tahun_pembuatan" type="number" :max="new Date().getFullYear()"
                                 class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                                 placeholder="Masukkan Tahun Pembuatan" v-model.number="form.Tahun_Pembuatan" />
                         </div>

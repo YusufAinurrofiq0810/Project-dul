@@ -33,13 +33,13 @@ class AngkutanController extends Controller
 
         if ($filterPerusahaan) {
             $query->whereHas('perusahaan', function ($q) use ($filterPerusahaan) {
-                $q->where('nama_perusahaan', 'like', '%' . $filterPerusahaan . '%');
+                $q->where('id', $filterPerusahaan);
             });
         }
 
         if ($filterJenisAngkutan) {
             $query->whereHas('jenisAngkutan', function ($q) use ($filterJenisAngkutan) {
-                $q->where('Nama_Jenis_Angkutan', 'like', '%' . $filterJenisAngkutan . '%');
+                $q->where('id', $filterJenisAngkutan);
             });
         }
 
@@ -51,6 +51,7 @@ class AngkutanController extends Controller
             'filterJenisAngkutan' => $filterJenisAngkutan,
             'perusahaanOptions' => $perusahaan,
             'jenisAngkutanOptions' => $jenisAngkutan,
+            'page' => $request->input('page', 1),
         ]);
     }
 
@@ -100,9 +101,9 @@ class AngkutanController extends Controller
                 // 'Tanggal_SK' => 'nullable|string|max:255',
                 // 'Kode_Trayek' => 'nullable|string|max:255',
                 'No_Seri' => 'nullable|string|max:255',
-                'Daya_Angkut_Orang' => 'nullable|numeric',
-                'Daya_Angkut_KG' => 'nullable|numeric',
-                'Tahun_Pembuatan' => 'nullable|numeric',
+                'Daya_Angkut_Orang' => 'nullable',
+                'Daya_Angkut_KG' => 'nullable',
+                'Tahun_Pembuatan' => 'nullable',
                 'Alamat' => 'nullable|string',
                 'keterangan' => 'nullable|string',
                 'trayek' => 'nullable|string',
@@ -114,7 +115,7 @@ class AngkutanController extends Controller
             return redirect()->route('angkutan.index')->with('success', 'Angkutan created successfully.');
         } catch (\Throwable $th) {
             Log::info($th);
-            return redirect()->back()->with('error', 'Failed to create angkutan: ' . $th->getMessage());
+            return redirect()->back()->withErrors( ['message' => 'Failed to create angkutan: ' . $th->getMessage()]);
         }
     }
 

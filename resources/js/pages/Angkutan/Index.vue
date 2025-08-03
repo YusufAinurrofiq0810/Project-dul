@@ -60,6 +60,7 @@ interface Props {
     filterJenisAngkutan: string | null;
     perusahaanOptions: Perusahaan[];
     jenisAngkutanOptions: JenisAngkutan[];
+    page: number;
 }
 
 const props = defineProps<Props>();
@@ -73,12 +74,14 @@ const importForm = useForm({
 // Reactive variable for the company name filter
 const filterPerusahaan = ref(props.filterPerusahaan || '');
 const filterJenisAngkutan = ref(props.filterJenisAngkutan || '');
+const pageProps = ref(props.page || 1);
 
 // Watch for changes in filterPerusahaan and update the URL
-watch([filterPerusahaan, filterJenisAngkutan], ([perusahaan, jenisAngkutan]) => {
+watch([filterPerusahaan, filterJenisAngkutan, pageProps], ([perusahaan, jenisAngkutan, page]) => {
     router.get('/angkutan', {
         perusahaan: perusahaan || null,
-        jenis_angkutan: jenisAngkutan || null
+        jenis_angkutan: jenisAngkutan || null,
+        page: page || 1,
     }, {
         preserveState: true, // Keep the current scroll position
         replace: true,       // Replace the current history entry
@@ -88,6 +91,8 @@ watch([filterPerusahaan, filterJenisAngkutan], ([perusahaan, jenisAngkutan]) => 
 function clearFilters() {
     filterPerusahaan.value = '';
     filterJenisAngkutan.value = '';
+    pageProps.value = 1;
+    applyFilters();
 }
 
 
@@ -193,6 +198,27 @@ function downloadTemplate() {
         });
 }
 
+function onPageClick(page: string) {
+    console.log('Navigating to page:', page);
+    if (page.includes('Next')) {
+        pageProps.value = +pageProps.value + 1;
+        return;
+    }
+    if (page.includes('Previous')) {
+        pageProps.value = +pageProps.value - 1;
+        return;
+    }
+    pageProps.value = +page;
+}
+
+let filterPerusahaanName: string|null = null;
+let filterJenisAngkutanName: string|null = null;
+function applyFilters () {
+    pageProps.value = 1;
+    filterPerusahaanName = props.perusahaanOptions.find(p => p.id == +filterPerusahaan.value)?.nama_perusahaan || null;
+    filterJenisAngkutanName = props.jenisAngkutanOptions.find(ja => ja.id == +filterJenisAngkutan.value)?.Nama_Jenis_Angkutan || null;
+}
+
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Angkutan',
@@ -251,11 +277,11 @@ const breadcrumbs: BreadcrumbItem[] = [
                             <label for="perusahaanFilter" class="text-xs font-medium text-gray-600 dark:text-gray-400">
                                 Nama Perusahaan
                             </label>
-                            <select id="perusahaanFilter" v-model="filterPerusahaan"
+                            <select id="perusahaanFilter" v-model="filterPerusahaan" @change="applyFilters"
                                 class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-colors">
                                 <option value="">Semua Perusahaan</option>
                                 <option v-for="perusahaan in props.perusahaanOptions" :key="perusahaan.id"
-                                    :value="perusahaan.nama_perusahaan">
+                                    :value="perusahaan.id">
                                     {{ perusahaan.nama_perusahaan }}
                                 </option>
                             </select>
@@ -267,11 +293,11 @@ const breadcrumbs: BreadcrumbItem[] = [
                                 class="text-xs font-medium text-gray-600 dark:text-gray-400">
                                 Jenis Angkutan
                             </label>
-                            <select id="jenisAngkutanFilter" v-model="filterJenisAngkutan"
+                            <select id="jenisAngkutanFilter" v-model="filterJenisAngkutan" @change="applyFilters"
                                 class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-colors">
                                 <option value="">Semua Jenis Angkutan</option>
                                 <option v-for="jenis in props.jenisAngkutanOptions" :key="jenis.id"
-                                    :value="jenis.Nama_Jenis_Angkutan">
+                                    :value="jenis.id">
                                     {{ jenis.Nama_Jenis_Angkutan }}
                                 </option>
                             </select>
@@ -292,17 +318,17 @@ const breadcrumbs: BreadcrumbItem[] = [
                 </div>
 
                 <!-- Active Filters Display -->
-                <div v-if="filterPerusahaan || filterJenisAngkutan"
+                <div v-if="filterPerusahaanName || filterJenisAngkutanName"
                     class="mt-3 pt-3 border-t border-gray-200 dark:border-gray-600">
                     <div class="flex flex-wrap items-center gap-2">
                         <span class="text-xs font-medium text-gray-600 dark:text-gray-400">Filter aktif:</span>
-                        <span v-if="filterPerusahaan"
+                        <span v-if="filterPerusahaanName"
                             class="inline-flex items-center px-2 py-1 text-xs font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-300">
-                            Perusahaan: {{ filterPerusahaan }}
+                            Perusahaan: {{ filterPerusahaanName }}
                         </span>
-                        <span v-if="filterJenisAngkutan"
+                        <span v-if="filterJenisAngkutanName"
                             class="inline-flex items-center px-2 py-1 text-xs font-medium text-green-800 bg-green-100 rounded-full dark:bg-green-900 dark:text-green-300">
-                            Jenis: {{ filterJenisAngkutan }}
+                            Jenis: {{ filterJenisAngkutanName }}
                         </span>
                     </div>
                 </div>
@@ -404,7 +430,8 @@ const breadcrumbs: BreadcrumbItem[] = [
                 </div>
                 <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
                     <template v-for="(link, key) in props.angkutans.links" :key="key">
-                        <Link :href="link.url || '#'"
+                        <Link :href="'#'"
+                            @click="onPageClick(link.label)"
                             class="relative inline-flex items-center px-4 py-2 border text-sm font-medium transition-colors"
                             :class="{
                                 'bg-blue-600 text-white border-blue-600 dark:bg-blue-500 dark:border-blue-500': link.active,
