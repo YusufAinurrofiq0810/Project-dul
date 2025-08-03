@@ -7,6 +7,7 @@ use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Carbon\Carbon; // Pastikan Carbon diimpor jika belum
+use Illuminate\Support\Facades\Log;
 
 class AngkutanExport implements FromCollection, WithHeadings, WithMapping
 {
@@ -100,7 +101,7 @@ class AngkutanExport implements FromCollection, WithHeadings, WithMapping
             $angkutan->Masa_berlaku_KP_End_date,
             $angkutan->Masa_berlaku_SK_Start_date,
             $angkutan->Masa_berlaku_SK_End_date,
-            $angkutan->keterangan_perizinan ? 'Aktif' : 'Tidak Aktif',
+            $angkutan->Keterangan_Perizinan ? 'Aktif' : 'Tidak Aktif',
             $angkutan->Jenis_BBM,
             $angkutan->Masa_Berlaku_STNK,
             $angkutan->trayek,
